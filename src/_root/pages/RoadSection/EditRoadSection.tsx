@@ -25,13 +25,13 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { LatLngTuple } from "leaflet";
-import MultipleUpload from "@/components/shared/MultipleUpload.tsx";
+// import MultipleUpload from "@/components/shared/MultipleUpload.tsx";
 
 const formSchema = z.object({
   name: z
     .string()
     .min(2, { message: "Nama wajib diisi, minimal 2 karakter, max 50" }),
-  panjang: z.string().transform((val) => Number(val)),
+  panjang: z.number(),
   access: z.string().optional(),
   province: z.string().optional(),
   city: z.string().optional(),
@@ -403,7 +403,7 @@ const EditRoadSection = () => {
                   </div>
                 </div>
                 <div className="container mx-auto">
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="file"
                     render={({ field }) => (
@@ -414,7 +414,7 @@ const EditRoadSection = () => {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                   <div className="md:px-16 px-2">
                     <MapSearch
                       defaultLat={latLong ? latLong?.[0] : -5.39714}

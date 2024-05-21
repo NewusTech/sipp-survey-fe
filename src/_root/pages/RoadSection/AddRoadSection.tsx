@@ -25,7 +25,7 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { LatLngTuple } from "leaflet";
-import MultipleUpload from "@/components/shared/MultipleUpload.tsx";
+// import MultipleUpload from "@/components/shared/MultipleUpload.tsx";
 
 const formSchema = z.object({
   no_ruas: z
@@ -45,7 +45,7 @@ const formSchema = z.object({
     .optional(),
   lebar: z.string().optional(),
   desa: z.string().optional(),
-  file: z.custom<File[]>().optional(),
+  // file: z.custom<File[]>().optional(),
 });
 
 // interface Corridors {
@@ -136,14 +136,14 @@ const AddRoadSection = () => {
       lebar: values.lebar,
       latitude: latLong?.[0],
       longitude: latLong?.[1],
-      images: [] as File[],
+      // images: [] as File[],
     };
 
-    const files = values.file || [];
-
-    files.forEach((file: File) => {
-      formData.images.push(file);
-    });
+    // const files = values.file || [];
+    //
+    // files.forEach((file: File) => {
+    //   formData.images.push(file);
+    // });
 
     axios
       .post(`${apiUrl}/${createRoadSection}`, formData, {
@@ -161,7 +161,6 @@ const AddRoadSection = () => {
         toast(error.message);
         console.log(error);
       });
-    console.log(values);
   }
 
   return (
@@ -252,7 +251,7 @@ const AddRoadSection = () => {
                             <Input
                               {...field}
                               className="border-b-2 rounded-none"
-                              placeholder="Panjang Ruas"
+                              placeholder="177.991"
                             />
                           </FormControl>
                           <FormMessage />
@@ -379,18 +378,18 @@ const AddRoadSection = () => {
                   </div>
                 </div>
                 <div className="container mx-auto">
-                  <FormField
-                    control={form.control}
-                    name="file"
-                    render={({ field }) => (
-                      <FormItem className="md:mx-5 mx-0 -mt-5 mb-5">
-                        <FormControl>
-                          <MultipleUpload fileChange={field.onChange} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/*<FormField*/}
+                  {/*  control={form.control}*/}
+                  {/*  name="file"*/}
+                  {/*  render={({ field }) => (*/}
+                  {/*    <FormItem className="md:mx-5 mx-0 -mt-5 mb-5">*/}
+                  {/*      <FormControl>*/}
+                  {/*        <MultipleUpload fileChange={field.onChange} />*/}
+                  {/*      </FormControl>*/}
+                  {/*      <FormMessage />*/}
+                  {/*    </FormItem>*/}
+                  {/*  )}*/}
+                  {/*/>*/}
                   <div className="md:px-16 px-2">
                     <MapSearch
                       defaultLat={latLong ? latLong?.[0] : -4.43242555}

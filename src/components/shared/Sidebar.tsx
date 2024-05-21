@@ -62,11 +62,11 @@ const Sidebar = () => {
           <div className="h-10 w-10 my-4">
             <img src="/assets/images/logo.jpg" alt="logo" />
           </div>
-          <h1 className="uppercase font-medium text-white text-[20px] mt-2">
-            Survey Kondisi Jalan
+          <h1 className="uppercase font-medium text-white text-[26px] mt-2">
+            Survey Kondisi
           </h1>
-          <h3 className="text-white font-light text-[10px] opacity-80 uppercase tracking-wider">
-            Dinas Bina Marga Tulang Bawang Barat
+          <h3 className="text-center text-white font-light text-[10px] opacity-80 uppercase tracking-wider">
+            Dinas Pekerjaan Umum Dan Penataan Ruang Tulang Bawang Barat
           </h3>
         </div>
         <ul className="space-y-2 text-white flex flex-col mt-10 mx-3">
