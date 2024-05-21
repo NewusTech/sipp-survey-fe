@@ -602,7 +602,10 @@ const EditBridgeSurvey = () => {
                         >
                           simpan
                         </Button>
-                        <Button className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10">
+                        <Button
+                          className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
+                          onClick={() => navigate("/bridge-survey")}
+                        >
                           batal
                         </Button>
                       </div>

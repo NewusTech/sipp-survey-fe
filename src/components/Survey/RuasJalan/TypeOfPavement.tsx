@@ -180,7 +180,7 @@ const TypeOfPavement = () => {
       })
       .then(() => {
         setTypeOfPavement((prevRoadSections) =>
-          prevRoadSections.filter((section) => section.id !== id),
+          prevRoadSections.filter((section) => section.id !== id)
         );
         toast("Berhasil delete data");
       })
@@ -222,22 +222,23 @@ const TypeOfPavement = () => {
               ))}
             </select>
           </div>
+          <div className="flex md:items-center items-start gap-2 md:flex-row flex-col">
+            <h4 className="text-gray-400">Kecamatan : </h4>
+            <select
+              className="w-full md:w-[140px] rounded-full p-2 bg-white"
+              value={selectedWilayah}
+              onChange={(e) => setSelectedWilayah(e.target.value)}
+            >
+              <option disabled>Pilih Wilayah</option>
+              {roadSections.map((roadSection) => (
+                <option key={roadSection.id} value={roadSection.name}>
+                  {roadSection.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="flex md:items-center items-start gap-2 md:flex-row flex-col">
-          <h4 className="text-gray-400">Kecamatan : </h4>
-          <select
-            className="w-full md:w-[140px] rounded-full p-2 bg-white"
-            value={selectedWilayah}
-            onChange={(e) => setSelectedWilayah(e.target.value)}
-          >
-            <option disabled>Pilih Wilayah</option>
-            {roadSections.map((roadSection) => (
-              <option key={roadSection.id} value={roadSection.name}>
-                {roadSection.name}
-              </option>
-            ))}
-          </select>
-        </div>
+
         <div className="flex md:flex-row flex-col gap-2">
           <Dialog>
             <DialogTrigger asChild>
@@ -364,7 +365,7 @@ const TypeOfPavement = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ),
+              )
             )
           )}
         </TableBody>

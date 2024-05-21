@@ -324,9 +324,20 @@ const CreatePageTypeOfPavement = () => {
                     defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
                     onLatLongChange={handleLatLongChange}
                   />
-                  <Button type="submit" className="bg-biru hover:bg-biru-2">
-                    Tambah Survey
-                  </Button>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      type="submit"
+                      className="rounded-full bg-biru w-full hover:bg-biru-2 text-xl font-light px-10"
+                    >
+                      Simpan
+                    </Button>
+                    <Button
+                      className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
+                      onClick={() => navigate(-1)}
+                    >
+                      Batal
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </div>

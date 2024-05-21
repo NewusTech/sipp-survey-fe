@@ -90,7 +90,7 @@ const CreatePageTypeOfPavement = () => {
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
   const filteredOptions = roadSections.filter((roadSection) =>
-    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase()),
+    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase())
   );
 
   const navigate = useNavigate();
@@ -439,9 +439,20 @@ const CreatePageTypeOfPavement = () => {
                       />
                     </div>
                   </div>
-                  <Button type="submit" className="bg-biru hover:bg-biru-2">
-                    Tambah Survey
-                  </Button>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      type="submit"
+                      className="bg-biru rounded-full hover:bg-biru-2"
+                    >
+                      Tambah Survey
+                    </Button>
+                    <Button
+                      className="rounded-full bg-pink hover:bg-pink-2 text-xl font-light "
+                      onClick={() => navigate("/road-survey")}
+                    >
+                      Batal
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </div>

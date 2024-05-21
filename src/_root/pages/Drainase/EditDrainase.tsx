@@ -55,12 +55,13 @@ const EditDrainase = () => {
   const [data, setData] = useState<DataById>({
     nama_ruas: "",
     panjang_ruas: 0,
+    desa_id: 0,
   });
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
   const filteredOptions = villages.filter((village) =>
-    village.nama.toLowerCase().includes(searchInput.toLowerCase()),
+    village.nama.toLowerCase().includes(searchInput.toLowerCase())
   );
 
   const apiUrl = import.meta.env.VITE_APP_API_URL;
@@ -104,6 +105,7 @@ const EditDrainase = () => {
       })
       .then((response) => {
         const data = response.data.data;
+        console.log(data);
         setData(data);
       })
       .catch((error) => {
@@ -118,7 +120,7 @@ const EditDrainase = () => {
       form.reset({
         nama_ruas: data.nama_ruas || "",
         panjang_ruas: data.panjang_ruas || 0,
-        desa_id: data.desa_id.toString(),
+        desa_id: data?.desa_id.toString() || 0,
       });
     }
   }, [data]);

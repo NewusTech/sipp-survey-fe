@@ -67,13 +67,13 @@ interface DrainaseDetails {
 const CreatePageSurveyDrainase = () => {
   const [drainases, setDrainases] = useState<Drainase[]>([]);
   const [drainaseDetail, setDrainaseDetail] = useState<DrainaseDetails | null>(
-    null,
+    null
   );
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
   const filteredOptions = drainases.filter((drainase) =>
-    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase()),
+    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase())
   );
 
   const handleLatLongChange = (lat: number, long: number) => {
@@ -358,9 +358,20 @@ const CreatePageSurveyDrainase = () => {
                     defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
                     onLatLongChange={handleLatLongChange}
                   />
-                  <Button type="submit" className="bg-biru hover:bg-biru-2">
-                    Tambah Survey
-                  </Button>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      type="submit"
+                      className="rounded-full bg-biru w-full hover:bg-biru-2 text-xl font-light px-10"
+                    >
+                      simpan
+                    </Button>
+                    <Button
+                      className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
+                      onClick={() => navigate(-1)}
+                    >
+                      batal
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </div>
