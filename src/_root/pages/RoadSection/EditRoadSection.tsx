@@ -25,7 +25,6 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { LatLngTuple } from "leaflet";
-// import MultipleUpload from "@/components/shared/MultipleUpload.tsx";
 
 const formSchema = z.object({
   name: z
