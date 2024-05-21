@@ -160,6 +160,7 @@ const AddRoadSection = () => {
         toast(error.message);
         console.log(error);
       });
+    console.log(values);
   }
 
   return (
