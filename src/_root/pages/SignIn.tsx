@@ -93,10 +93,10 @@ const SignIn = () => {
             <img src="/assets/images/logo.jpg" alt="logo" />
           </div>
           <h1 className="text-[30px] md:text-[38px] text-center uppercase text-biru font-semibold">
-            survey kondisi jalan
+            survey kondisi
           </h1>
-          <h3 className="text-biru text-sm md:text-lg uppercase font-light tracking-widest -mt-1 md:-mt-3 mb-14">
-            dinas binamarga tulang bawang barat
+          <h3 className="text-biru text-xs text-center w-[300px] md:w-[350px] uppercase font-light tracking-widest -mt-1 mb-14">
+            Dinas Pekerjaan Umum Dan Penataan Ruang Tulang Bawang Barat
           </h3>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

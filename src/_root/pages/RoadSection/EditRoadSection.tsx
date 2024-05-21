@@ -31,7 +31,7 @@ const formSchema = z.object({
   name: z
     .string()
     .min(2, { message: "Nama wajib diisi, minimal 2 karakter, max 50" }),
-  panjang: z.string().transform((val) => Number(val)),
+  panjang: z.number(),
   access: z.string().optional(),
   province: z.string().optional(),
   city: z.string().optional(),
