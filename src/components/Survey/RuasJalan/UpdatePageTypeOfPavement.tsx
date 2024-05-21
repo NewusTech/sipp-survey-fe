@@ -75,7 +75,7 @@ interface DataById {
 const CreatePageTypeOfPavement = () => {
   const { id } = useParams();
   const [getTypeOfPavement, setGetTypeOfPavement] = useState<DataById | null>(
-    null,
+    null
   );
 
   const navigate = useNavigate();
@@ -360,12 +360,20 @@ const CreatePageTypeOfPavement = () => {
                       />
                     </div>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full bg-biru hover:bg-biru-2"
-                  >
-                    Ubah Data
-                  </Button>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      type="submit"
+                      className="bg-biru rounded-full hover:bg-biru-2"
+                    >
+                      Ubah Survey
+                    </Button>
+                    <Button
+                      className="rounded-full bg-pink hover:bg-pink-2 text-xl font-light "
+                      onClick={() => navigate("/road-survey")}
+                    >
+                      Batal
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </div>
