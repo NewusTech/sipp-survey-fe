@@ -66,7 +66,7 @@ const BridgeSectionDetail = ({ id }: { id: number }) => {
       .post(
         `${apiUrl}/jembatan/export_byrow`,
         { id_jembatan: [id] },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
         // Tanggapi respons dari server jika diperlukan
@@ -81,7 +81,7 @@ const BridgeSectionDetail = ({ id }: { id: number }) => {
   };
 
   return (
-    <DialogContent className="w-full flex flex-col h-full md:h-[750px]">
+    <DialogContent className="w-full flex flex-col h-full md:h-[750px] overflow-scroll">
       <DialogHeader>
         <DialogTitle>Detail Ruas Jembatan</DialogTitle>
       </DialogHeader>

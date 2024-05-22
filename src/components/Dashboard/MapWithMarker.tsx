@@ -61,7 +61,7 @@ const MapWithMarkers = ({ year }: { year: string }) => {
 
   // Konfigurasi ikon marker kustom
   const myIcon = L.icon({
-    iconUrl: "assets/icons/map.svg",
+    iconUrl: "assets/icons/map-baik.svg",
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -71,7 +71,7 @@ const MapWithMarkers = ({ year }: { year: string }) => {
     <MapContainer
       center={[-4.43242555, 105.16826426180435]}
       zoom={10}
-      style={{ height: "40vh" }}
+      style={{ height: "80vh" }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {mapPointData.map((point, index) => (

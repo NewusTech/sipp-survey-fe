@@ -60,6 +60,8 @@ const BridgeSectionData = ({ year }: { year: string }) => {
     fetchRoadSections(currentPage);
   }, [currentPage]);
 
+  // console.log(year)
+
   const fetchRoadSections = (page: number) => {
     axios
       .get(`${apiUrl}/${listBridgeSection}`, {

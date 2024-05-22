@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,10 +74,11 @@ interface DataById {
 
 const CreatePageTypeOfPavement = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [getTypeOfPavement, setGetTypeOfPavement] = useState<DataById | null>(
     null
   );
-
+  const currentPage = searchParams.get("page");
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const updateSurvey = "survey/jenis_perkerasan";
@@ -145,7 +146,7 @@ const CreatePageTypeOfPavement = () => {
       })
       .then((response) => {
         toast(response.data.message);
-        navigate("/road-survey");
+        navigate(`/road-survey?page=${currentPage}`);
       })
       .catch((error) => {
         console.log(error);
@@ -369,7 +370,9 @@ const CreatePageTypeOfPavement = () => {
                     </Button>
                     <Button
                       className="rounded-full bg-pink hover:bg-pink-2 text-xl font-light "
-                      onClick={() => navigate("/road-survey")}
+                      onClick={() =>
+                        navigate(`/road-survey?page=${currentPage}`)
+                      }
                     >
                       Batal
                     </Button>

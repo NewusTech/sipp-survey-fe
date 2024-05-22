@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { months } from "@/constants";
-import { Link } from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import Loader from "@/components/shared/Loader.tsx";
 import Eye from "@/assets/icons/Eye.tsx";
 
@@ -32,6 +32,8 @@ const DrainaseSurvey = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterByMonth, setFilterByMonth] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -40,13 +42,16 @@ const DrainaseSurvey = () => {
 
   useEffect(() => {
     setIsLoading(true);
+    const pageString = searchParams.get("page");
+    const page = pageString ? parseInt(pageString) : 1;
+    setCurrentPage(page);
     axios
       .get(`${apiUrl}/${listDrainase}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          page: currentPage,
+          page: page,
           perPage: perPage,
           search: searchTerm,
           month: filterByMonth,
@@ -65,22 +70,22 @@ const DrainaseSurvey = () => {
         setIsLoading(false);
       });
   }, [
-    currentPage,
+    searchParams,
     searchTerm,
     filterByMonth,
     // filterByCorridor,
   ]);
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    navigate(`?page=${currentPage - 1}`);
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    navigate(`?page=${currentPage + 1}`);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    navigate(`?page=${page}`);
   };
 
   return (
