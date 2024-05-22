@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,9 +58,11 @@ interface DetailById {
 
 const CreatePageTypeOfPavement = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [drainaseById, setDrainaseById] = useState<DetailById | null>(null);
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
 
+  const currentPage = searchParams.get("page");
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const updateSurvey = "detail_survey_drainase";
@@ -333,7 +335,7 @@ const CreatePageTypeOfPavement = () => {
                     </Button>
                     <Button
                       className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                      onClick={() => navigate(-1)}
+                      onClick={() => navigate(`/survey-drainase?page=${currentPage}`)}
                     >
                       Batal
                     </Button>

@@ -14,6 +14,7 @@ const Topbar = () => {
 
   // const photo = Cookies.get("photo");
   // const url = import.meta.env.VITE_APP_URL;
+  const name = Cookies.get("name");
 
   const handleLogout = () => {
     // Perform logout logic here
@@ -59,7 +60,7 @@ const Topbar = () => {
           <div className="flex items-center justify-between">
             <ChevronDown className="w-4 ml-3 text-biru md:block hidden" />
             <div className="px-4 hidden md:flex md:flex-col items-start">
-              <h5 className="text-sm text-black left-0">Jennie Kim</h5>
+              <h5 className="text-xs text-black left-0">{name}</h5>
               <p className="text-[10px] text-gray-500">Admin</p>
             </div>
             <div className="w-8 h-8 rounded-full m-1 md:mr-2 md:ml-0">

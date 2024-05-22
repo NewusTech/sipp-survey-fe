@@ -60,8 +60,8 @@ const BridgeDashboard = () => {
         </h1>
       </div>
       <div className="flex md:flex-row flex-col gap-5">
-        <div className="w-full md:w-8/12 bg-blue-400 shadow rounded-xl">
-          <div className="flex flex-col p-5 gap-5">
+        <div className="w-full md:w-8/12 md:h-[140px] bg-blue-400 shadow rounded-xl">
+          <div className="flex flex-col px-5 py-2 gap-1">
             <h5 className="text-white">Total Panjang Jembatan</h5>
             <div className="flex flex-col items-end md:mt-5">
               <h1 className="text-white font-semibold text-3xl">
@@ -72,8 +72,8 @@ const BridgeDashboard = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-8/12 bg-green-500 shadow rounded-xl">
-          <div className="flex flex-col p-5 gap-5">
+        <div className="w-full md:w-8/12 h-[140px] bg-green-500 shadow rounded-xl">
+          <div className="flex flex-col px-5 py-2 gap-1">
             <h5 className="text-white">Jumlah Jembatan</h5>
             <div className="flex flex-col items-end md:mt-5">
               <h1 className="text-white font-semibold text-3xl">

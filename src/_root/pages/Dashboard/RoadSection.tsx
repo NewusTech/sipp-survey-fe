@@ -93,8 +93,8 @@ const RoadSectionDashboard = () => {
         </h1>
       </div>
       <div className="flex md:flex-row flex-col gap-5">
-        <div className="w-full md:w-4/12 bg-white shadow rounded-xl">
-          <div className="flex flex-col p-5 gap-5">
+        <div className="w-full md:w-4/12 md:h-[140px] bg-white shadow rounded-xl">
+          <div className="flex flex-col px-5 py-2 gap-1">
             <h5 className="text-gray-500">Total Panjang Jalan</h5>
             <div className="flex flex-col items-end md:mt-5">
               <h1 className="text-biru font-semibold text-3xl">
@@ -105,8 +105,8 @@ const RoadSectionDashboard = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-4/12 bg-yellow-400 shadow rounded-xl">
-          <div className="flex flex-col p-5 gap-5">
+        <div className="w-full md:w-4/12 md:h-[140px] bg-yellow-400 shadow rounded-xl">
+          <div className="flex flex-col px-5 py-2 gap-1">
             <h5 className="text-white">Jumlah Ruas</h5>
             <div className="flex flex-col items-end md:mt-5">
               <h1 className="text-white font-semibold text-3xl">
@@ -118,8 +118,8 @@ const RoadSectionDashboard = () => {
         </div>
         <Dialog>
           <DialogTrigger asChild>
-            <div className="w-full md:w-4/12 bg-red-400 shadow rounded-xl cursor-pointer">
-              <div className="flex flex-col p-5 gap-5">
+            <div className="w-full md:w-4/12 md:h-[140px] bg-red-400 shadow rounded-xl cursor-pointer">
+              <div className="flex flex-col px-5 py-2 gap-5">
                 <h5 className="text-white">Mantap</h5>
                 <div className="flex items-center justify-between mt-3">
                   <h1 className="text-white font-semibold text-3xl">
@@ -140,8 +140,8 @@ const RoadSectionDashboard = () => {
 
         <Dialog>
           <DialogTrigger asChild>
-            <div className="w-full md:w-4/12 bg-blue-400 shadow rounded-xl cursor-pointer">
-              <div className="flex flex-col p-5 gap-5">
+            <div className="w-full md:w-4/12 md:h-[140px] bg-blue-400 shadow rounded-xl cursor-pointer">
+              <div className="flex flex-col px-5 py-2 gap-5">
                 <h5 className="text-white">Tidak Mantap</h5>
                 <div className="flex items-center justify-between mt-3">
                   <h1 className="text-white font-semibold text-3xl">
@@ -164,7 +164,7 @@ const RoadSectionDashboard = () => {
         <MapWithMarkers year={selectedYear} />
         <div className="flex px-1 py-2 gap-3">
           <div className="flex gap-1">
-            <img src="/assets/icons/map.svg" alt="ruas jalan" />
+            <img src="/assets/icons/map-baik.svg" alt="ruas jalan" />
             <p>Ruas Jalan</p>
           </div>
         </div>

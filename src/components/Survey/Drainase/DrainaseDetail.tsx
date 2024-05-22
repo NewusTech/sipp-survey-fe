@@ -1,4 +1,3 @@
-// import { Button } from "@/components/ui/button.tsx";
 import {
   Table,
   TableBody,
@@ -11,11 +10,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Loader from "@/components/shared/Loader.tsx";
-import { Link, useParams } from "react-router-dom";
-// import { Input } from "@/components/ui/input.tsx";
+import {Link, useNavigate, useParams, useSearchParams} from "react-router-dom";
 import { FileText, Plus } from "lucide-react";
-// import Date from "@/assets/icons/Date.tsx";
-// import { months } from "@/constants";
 import Paginations from "@/components/shared/Paginations.tsx";
 import {
   AlertDialog,
@@ -30,8 +26,6 @@ import {
 } from "@/components/ui/alert-dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import Trash from "@/assets/icons/Trash.tsx";
-// import Eye from "@/assets/icons/Eye.tsx";
-// import RoadSectionDetail from "@/components/shared/RoadSectionDetail.tsx";
 import Pencil from "@/assets/icons/Pencil.tsx";
 import { toast } from "sonner";
 
@@ -55,26 +49,31 @@ const DrainaseDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const perPage = 10;
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    navigate(`?page=${currentPage - 1}`);
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    navigate(`?page=${currentPage + 1}`);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    navigate(`?page=${page}`);
   };
 
   useEffect(() => {
     if (id) {
       setIsLoading(true);
+      const pageString = searchParams.get("page");
+      const page = pageString ? parseInt(pageString) : 1;
+      setCurrentPage(page);
       axios
         .get(`${apiUrl}/survey_drainase/detail`, {
           headers: {
@@ -82,7 +81,7 @@ const DrainaseDetail = () => {
           },
           params: {
             desa_id: id,
-            page: currentPage,
+            page: page,
             perPage: perPage,
           },
         })
@@ -98,7 +97,7 @@ const DrainaseDetail = () => {
           setIsLoading(false);
         });
     }
-  }, [id]);
+  }, [id, searchParams]);
 
   const onDelete = (id: number) => {
     axios
@@ -255,7 +254,7 @@ const DrainaseDetail = () => {
                 <TableCell>
                   <div className="flex gap-2 items-center justify-center">
                     <Link
-                      to={`/survey-drainase/edit/${item.id}`}
+                      to={`/survey-drainase/edit/${item.id}?${currentPage}`}
                       className="cursor-pointer rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center"
                     >
                       <div>

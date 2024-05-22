@@ -29,10 +29,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog.tsx";
 import { months } from "@/constants";
-import { Link } from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import Loader from "@/components/shared/Loader.tsx";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
-// import ImportBridgeSection from "@/components/BridgeSection/ImportBridgeSection.tsx";
 import ImportRoadSection from "@/components/Survey/RuasJalan/ImportRoadSection.tsx";
 import Eye from "@/assets/icons/Eye.tsx";
 import RoadSectionDetail from "@/components/shared/RoadSectionDetail.tsx";
@@ -63,14 +62,9 @@ interface RoadSections {
   name: string;
 }
 
-// interface Corridors {
-//   id: number;
-//   name: string;
-// }
-
 const TypeOfPavement = () => {
   const [typeOfPavement, setTypeOfPavement] = useState<TypeOfPavement[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterByMonth, setFilterByMonth] = useState("");
@@ -78,39 +72,39 @@ const TypeOfPavement = () => {
 
   const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
   const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
-  // const [corridors, setCorridors] = useState<Corridors[]>([]);
-  // const [filterByCorridor, setFilterByCorridor] = useState("");
 
   const [selectedId, setSelectedId] = useState<number>(0);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const listTypeOfPavement = "survey/jenis_perkerasan";
   const wilayah = "kecamatan";
-  // const corridor = "koridor/list";
 
   useEffect(() => {
     setIsLoading(true);
+    const pageString = searchParams.get("page");
+    const page = pageString ? parseInt(pageString) : 1;
+    setCurrentPage(page);
     axios
       .get(`${apiUrl}/${listTypeOfPavement}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          page: currentPage,
+          page: page,
           perPage: perPage,
           search: searchTerm,
           month: filterByMonth,
           wilayah: selectedWilayah,
-          // koridor: filterByCorridor,
         },
       })
       .then((response) => {
         const data = response.data.data.data;
         setTypeOfPavement(data);
         setTotalPages(Math.ceil(response.data.data.total / perPage));
-        console.log(data);
       })
       .catch((error) => {
         console.error("Error fetching road sections:", error);
@@ -118,30 +112,7 @@ const TypeOfPavement = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [
-    currentPage,
-    searchTerm,
-    filterByMonth,
-    selectedWilayah,
-    // filterByCorridor,
-  ]);
-
-  // useEffect(() => {
-  //   axios
-  //     .get(`${apiUrl}/${corridor}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       // Setel daftar koridor ke dalam state
-  //       setCorridors(response.data.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching corridors:", error);
-  //       console.log(error);
-  //     });
-  // }, []);
+  }, [searchTerm, filterByMonth, selectedWilayah, searchParams]);
 
   useEffect(() => {
     axios
@@ -160,15 +131,15 @@ const TypeOfPavement = () => {
   }, []);
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+      navigate(`?page=${currentPage - 1}`);
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+      navigate(`?page=${currentPage + 1}`);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    navigate(`?page=${page}`);
   };
 
   const onDelete = (id: number) => {
@@ -327,7 +298,7 @@ const TypeOfPavement = () => {
                         <RoadSectionDetail id={selectedId} />
                       </Dialog>
                       <Link
-                        to={`/road-survey/edit/${id}`}
+                        to={`/road-survey/edit/${id}?page=${currentPage}`}
                         className="cursor-pointer rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center"
                       >
                         <div>
