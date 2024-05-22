@@ -66,7 +66,7 @@ const MapWithMarkers = ({ year }: { year: string }) => {
     <MapContainer
       center={[-4.43242555, 105.16826426180435]}
       zoom={10}
-      style={{ height: "40vh" }}
+      style={{ height: "80vh" }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 

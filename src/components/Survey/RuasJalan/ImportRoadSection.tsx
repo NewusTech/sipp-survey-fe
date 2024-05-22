@@ -73,10 +73,11 @@ const ImportRoadSection = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
-        },
+        }
       )
       .then((response) => {
         toast(response.data.message);
+        console.log(response);
         window.location.reload();
       })
       .catch((error) => {

@@ -43,6 +43,8 @@ const RoadSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortField, setSortField] = useState<keyof RoadSection>("no_ruas");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -71,6 +73,7 @@ const RoadSection = () => {
       .then((response) => {
         const data = response.data.data.data;
         setRoadSections(data);
+        console.log(data)
         setTotalPages(Math.ceil(response.data.data.total / perPage));
       })
       .catch((error) => {
@@ -79,6 +82,36 @@ const RoadSection = () => {
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const handleSort = (field: keyof RoadSection) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, roadSections);
+  };
+
+  const sortData = (field: keyof RoadSection, order: "asc" | "desc", data: RoadSection[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setRoadSections(sortedData);
   };
 
   const handlePreviousPage = () => {
@@ -126,11 +159,21 @@ const RoadSection = () => {
         <Table className="bg-white rounded-2xl">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">No</TableHead>
-              <TableHead>Nama</TableHead>
-              <TableHead>Kecamatan</TableHead>
-              <TableHead>Panjang</TableHead>
-              <TableHead>Lebar</TableHead>
+              <TableHead className="w-[100px]" onClick={() => handleSort("no_ruas")}>
+                No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("nama")}>
+                Nama {sortField === "nama" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("kecamatan")}>
+                Kecamatan {sortField === "kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("panjang_ruas")}>
+                Panjang {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("lebar")}>
+                Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

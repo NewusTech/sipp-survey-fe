@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L, { LatLngTuple } from "leaflet";
@@ -9,7 +9,7 @@ const MapSearch: React.FC<{
   onLatLongChange: (lat: number, long: number) => void;
   defaultLat: number;
   defaultLng: number;
-}> = ({ onLatLongChange, defaultLat, defaultLng }) => {
+}> = ({ onLatLongChange, defaultLat, defaultLng, latLong }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [markerPosition, setMarkerPosition] = useState<LatLngTuple | null>(
     null,
@@ -21,6 +21,34 @@ const MapSearch: React.FC<{
     defaultLng,
   ]); // Default center
   const [mapZoom, setMapZoom] = useState<number>(10); // Default zoom level
+
+  useEffect(() => {
+    // Fetch data based on defaultLat and defaultLng when component mounts
+    if(defaultLat && defaultLng) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latLong?.[0]}&lon=${latLong?.[1]}`
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch data.");
+          }
+
+          const data = await response.json();
+          const {lat, lon} = data;
+          setMarkerPosition([Number(lat), Number(lon)]);
+          setMapCenter([Number(lat), Number(lon)]);
+          setMapZoom(13); // Desired zoom level
+          onLatLongChange(parseFloat(lat), parseFloat(lon));
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [defaultLng, defaultLat]);
+
 
   const handleSearch = async () => {
     try {
@@ -50,7 +78,7 @@ const MapSearch: React.FC<{
   };
 
   const myIcon = L.icon({
-    iconUrl: "assets/icons/map.svg",
+    iconUrl: "assets/icons/map-baik.svg",
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],

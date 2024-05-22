@@ -78,6 +78,8 @@ interface DataById {
   bahan: string;
   kondisi_lantai: string;
   kecamatan_id: any;
+  latitude: string;
+  longitude: string;
 }
 
 const EditBridgeSurvey = () => {
@@ -103,7 +105,10 @@ const EditBridgeSurvey = () => {
     bahan: "",
     kondisi_lantai: "",
     kecamatan_id: 0,
+    latitude: "",
+    longitude: ""
   });
+
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_APP_API_URL;
@@ -148,7 +153,6 @@ const EditBridgeSurvey = () => {
       .then((response) => {
         const data = response.data.data;
         setData(data);
-        console.log(data);
       })
       .catch((error) => {
         console.error("Error fetching bridge section by id:", error);
@@ -156,8 +160,10 @@ const EditBridgeSurvey = () => {
       });
   }, []);
 
+
   useEffect(() => {
     if (data) {
+      setLatLong([parseFloat(data.latitude), parseFloat(data.longitude)])
       // Pastikan getData sudah ada
       form.reset({
         no_ruas: data.no_ruas,
@@ -590,8 +596,9 @@ const EditBridgeSurvey = () => {
                   {/*/>*/}
                   <div className="md:px-16 px-2">
                     <MapSearch
-                      defaultLat={latLong ? latLong?.[0] : -5.39714}
-                      defaultLng={latLong ? latLong?.[1] : 105.26679}
+                      defaultLat={latLong ? latLong?.[0] : -4.43242555}
+                      defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
+                      latLong={latLong ? latLong : []}
                       onLatLongChange={handleLatLongChange}
                     />
                     <div className="flex gap-4 md:mx-5 mx-0 mt-10 justify-center md:justify-end my-10">

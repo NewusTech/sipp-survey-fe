@@ -22,7 +22,7 @@ const Dashboard = () => {
     }
   }, []);
   return (
-    <section className="sm:ml-64 flex md:flex-row flex-col gap-10 md:h-[1570px] w-screen overflow-scroll md:overflow-hidden">
+    <section className="sm:ml-64 flex md:flex-row flex-col gap-10 md:h-[1950px] w-screen overflow-scroll md:overflow-hidden">
       <div className="w-full mt-2">
         <Tabs defaultValue="jalan" className="w-full">
           <TabsList className="bg-white w-full flex flex-between">

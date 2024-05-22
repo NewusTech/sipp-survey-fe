@@ -64,7 +64,7 @@ const RoadSectionDetail = ({ id }: { id: number }) => {
       .post(
         `${apiUrl}/survey/export_byrow`,
         { id_survey: [id] },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
         // Tanggapi respons dari server jika diperlukan
@@ -78,7 +78,7 @@ const RoadSectionDetail = ({ id }: { id: number }) => {
   };
 
   return (
-    <DialogContent className="w-full flex flex-col h-[800px] md:h-[650px]">
+    <DialogContent className="w-full flex flex-col h-full md:h-[650px] overflow-scroll">
       <DialogHeader>
         <DialogTitle>Detail Ruas Jalan</DialogTitle>
       </DialogHeader>
