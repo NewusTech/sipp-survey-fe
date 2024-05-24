@@ -166,14 +166,14 @@ const StatisticType = ({ year }: { year: string }) => {
           <TableBody>
             <TableRow>
               <TableCell className="truncate">
-                {result.hotmix_count} M
+                {result.hotmix_count || 0} M
               </TableCell>
-              <TableCell className="truncate">{result.rigit_count} M</TableCell>
-              <TableCell className="truncate">{result.lapen_count} M</TableCell>
+              <TableCell className="truncate">{result.rigit_count || 0} M</TableCell>
+              <TableCell className="truncate">{result.lapen_count || 0} M</TableCell>
               <TableCell className="truncate">
-                {result.telford_count} M
+                {result.telford_count || 0} M
               </TableCell>
-              <TableCell className="truncate">{result.tanah_count} M</TableCell>
+              <TableCell className="truncate">{result.tanah_count || 0} M</TableCell>
               <TableCell className="truncate">{total} KM</TableCell>
             </TableRow>
           </TableBody>

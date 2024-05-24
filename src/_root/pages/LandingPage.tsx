@@ -7,7 +7,7 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <main className="bg-[#FDFDFD] w-full h-[screen">
+    <main className="bg-[#FDFDFD] w-full min-h-[790px]">
       <section className="flex flex-col">
         <div className="flex justify-between md:container md:mx-auto px-2 md:px-10 py-5">
           <div className="flex flex-col md:flex-row items-center justify-center">
@@ -66,7 +66,7 @@ const LandingPage = () => {
         </div>
         <div className="mt-80 flex justify-center items-center gap-20 md:gap-5 md:-mt-[90px] z-30">
           <a
-            href="https://anggaran.newus.id/"
+            href="https://anggaran.sippp-tubabakab.com/"
             target="_blank"
             className="w-16 h-16 md:h-[138px] md:w-[138px] rounded-full bg-[#FEC830] transition-colors duration-300 hover:bg-[#FFBE05] flex flex-col items-center justify-center gap-2 shadow-custom"
           >

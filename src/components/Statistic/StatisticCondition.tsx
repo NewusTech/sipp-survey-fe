@@ -165,10 +165,10 @@ const StatisticCondition = ({ year }: { year: string }) => {
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell>{result.baik_percentage}%</TableCell>
-              <TableCell>{result.sedang_percentage}%</TableCell>
-              <TableCell>{result.rusak_ringan_percentage}%</TableCell>
-              <TableCell>{result.rusak_berat_percentage}%</TableCell>
+              <TableCell>{result.baik_percentage || 0}%</TableCell>
+              <TableCell>{result.sedang_percentage || 0}%</TableCell>
+              <TableCell>{result.rusak_ringan_percentage || 0}%</TableCell>
+              <TableCell>{result.rusak_berat_percentage || 0}%</TableCell>
               <TableCell>{mantap}%</TableCell>
               <TableCell>{tidakMantap}%</TableCell>
             </TableRow>

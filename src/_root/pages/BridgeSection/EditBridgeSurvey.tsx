@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import { LatLngTuple } from "leaflet";
 // import MultipleUpload from "@/components/shared/MultipleUpload.tsx";
 
@@ -84,6 +84,7 @@ interface DataById {
 
 const EditBridgeSurvey = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [kecamatans, setKecamatans] = useState<Kecamatan[]>([]);
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const [data, setData] = useState<DataById>({
@@ -109,6 +110,7 @@ const EditBridgeSurvey = () => {
     longitude: ""
   });
 
+  const currentPage = searchParams.get("page");
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_APP_API_URL;
@@ -153,6 +155,7 @@ const EditBridgeSurvey = () => {
       .then((response) => {
         const data = response.data.data;
         setData(data);
+        setLatLong([parseFloat(data.latitude), parseFloat(data.longitude)])
       })
       .catch((error) => {
         console.error("Error fetching bridge section by id:", error);
@@ -230,14 +233,15 @@ const EditBridgeSurvey = () => {
       .then((response) => {
         const data = response.data.message;
         toast(data);
-        navigate("/bridge-survey");
+        navigate(`/bridge-survey?page=${currentPage}`);
       })
       .catch((error) => {
         toast(error.message);
         console.log(error);
       });
-    console.log(values);
   }
+
+  // console.log(latLong)
 
   return (
     <section className="bg-abu-2 w-screen h-screen md:h-[1800px] py-10 overflow-scroll md:overflow-hidden">
@@ -596,9 +600,8 @@ const EditBridgeSurvey = () => {
                   {/*/>*/}
                   <div className="md:px-16 px-2">
                     <MapSearch
-                      defaultLat={latLong ? latLong?.[0] : -4.43242555}
-                      defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
-                      latLong={latLong ? latLong : []}
+                      defaultLat={latLong ? latLong?.[0] : undefined}
+                      defaultLng={latLong ? latLong?.[1] : undefined}
                       onLatLongChange={handleLatLongChange}
                     />
                     <div className="flex gap-4 md:mx-5 mx-0 mt-10 justify-center md:justify-end my-10">
@@ -611,7 +614,7 @@ const EditBridgeSurvey = () => {
                         </Button>
                         <Button
                           className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                          onClick={() => navigate("/bridge-survey")}
+                          onClick={() => navigate(`/bridge-survey?page=${currentPage}`)}
                         >
                           batal
                         </Button>

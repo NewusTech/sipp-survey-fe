@@ -7,28 +7,26 @@ import { Button } from "@/components/ui/button.tsx";
 
 const MapSearch: React.FC<{
   onLatLongChange: (lat: number, long: number) => void;
-  defaultLat: number;
-  defaultLng: number;
-}> = ({ onLatLongChange, defaultLat, defaultLng, latLong }) => {
+  defaultLat: number | undefined;
+  defaultLng: number | undefined;
+}> = ({ onLatLongChange, defaultLat, defaultLng }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [markerPosition, setMarkerPosition] = useState<LatLngTuple | null>(
     null,
   );
   const [draggable, setDraggable] = useState(false);
-
   const [mapCenter, setMapCenter] = useState<LatLngTuple>([
-    defaultLat,
-    defaultLng,
+    -4.43242555, 105.16826426180435
   ]); // Default center
   const [mapZoom, setMapZoom] = useState<number>(10); // Default zoom level
 
   useEffect(() => {
     // Fetch data based on defaultLat and defaultLng when component mounts
-    if(defaultLat && defaultLng) {
+    if(defaultLng && defaultLat) {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latLong?.[0]}&lon=${latLong?.[1]}`
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultLat}&lon=${defaultLng}`
           );
 
           if (!response.ok) {
@@ -47,8 +45,7 @@ const MapSearch: React.FC<{
       };
       fetchData();
     }
-  }, [defaultLng, defaultLat]);
-
+  }, [defaultLat, defaultLng]);
 
   const handleSearch = async () => {
     try {
@@ -65,6 +62,7 @@ const MapSearch: React.FC<{
       if (data.length > 0) {
         const firstResult = data[0];
         const { lat, lon } = firstResult;
+        // Hapus marker yang ada
         setMarkerPosition([Number(lat), Number(lon)]);
         setMapCenter([Number(lat), Number(lon)]);
         setMapZoom(13); // Zoom level yang diinginkan

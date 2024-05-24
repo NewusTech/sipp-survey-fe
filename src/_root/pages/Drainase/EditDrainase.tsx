@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import { Search } from "lucide-react";
 
 const formSchema = z.object({
@@ -49,6 +49,7 @@ interface Desa {
 
 const EditDrainase = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   // const [corridors, setCorridors] = useState<Corridors[]>([]);
   const [villages, setVillages] = useState<Desa[]>([]);
   // const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
@@ -57,6 +58,7 @@ const EditDrainase = () => {
     panjang_ruas: 0,
     desa_id: 0,
   });
+  const currentPage = searchParams.get("page");
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
@@ -142,7 +144,7 @@ const EditDrainase = () => {
       .then((response) => {
         const data = response.data.message;
         toast(data);
-        navigate("/drainase");
+        navigate(`/drainase?page=${currentPage}`);
       })
       .catch((error) => {
         toast(error.message);
@@ -257,7 +259,7 @@ const EditDrainase = () => {
                           </Button>
                           <Button
                             className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                            onClick={() => navigate("/drainase")}
+                            onClick={() => navigate(`/drainase?page=${currentPage}`)}
                           >
                             batal
                           </Button>

@@ -69,7 +69,8 @@ const TypeOfPavement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterByMonth, setFilterByMonth] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [sortField, setSortField] = useState<keyof TypeOfPavement>("no_ruas");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
   const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
 
@@ -129,6 +130,36 @@ const TypeOfPavement = () => {
         console.log(error);
       });
   }, []);
+
+  const handleSort = (field: keyof TypeOfPavement) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, typeOfPavement);
+  };
+
+  const sortData = (field: keyof TypeOfPavement, order: "asc" | "desc", data: TypeOfPavement[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setTypeOfPavement(sortedData);
+  };
 
   const handlePreviousPage = () => {
       navigate(`?page=${currentPage - 1}`);
@@ -232,11 +263,21 @@ const TypeOfPavement = () => {
       <Table className="bg-white rounded-2xl">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">No</TableHead>
-            <TableHead className="truncate">Nama Ruas</TableHead>
-            <TableHead className="truncate">Kecamatan</TableHead>
-            <TableHead className="truncate">Panjang Ruas</TableHead>
-            <TableHead className="truncate">Lebar Ruas</TableHead>
+            <TableHead className="w-[100px] truncate" onClick={() => handleSort("no_ruas")}>
+              No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
+              Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("name_kecamatan")}>
+              Kecamatan {sortField === "name_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("panjang_ruas")}>
+              Panjang Ruas {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("lebar")}>
+              Lebar Ruas {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/input.tsx";
 import { Plus, Search } from "lucide-react";
-import Date from "@/assets/icons/Date.tsx";
 import {
   Table,
   TableBody,
@@ -13,7 +12,6 @@ import Paginations from "@/components/shared/Paginations.tsx";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { months } from "@/constants";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import Loader from "@/components/shared/Loader.tsx";
 import Eye from "@/assets/icons/Eye.tsx";
@@ -30,10 +28,11 @@ const DrainaseSurvey = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterByMonth, setFilterByMonth] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [sortField, setSortField] = useState<keyof DrainaseSurvey>("id");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -54,8 +53,6 @@ const DrainaseSurvey = () => {
           page: page,
           perPage: perPage,
           search: searchTerm,
-          month: filterByMonth,
-          // koridor: filterByCorridor,
         },
       })
       .then((response) => {
@@ -72,9 +69,37 @@ const DrainaseSurvey = () => {
   }, [
     searchParams,
     searchTerm,
-    filterByMonth,
-    // filterByCorridor,
   ]);
+
+  const handleSort = (field: keyof DrainaseSurvey) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, drainaseList);
+  };
+
+  const sortData = (field: keyof DrainaseSurvey, order: "asc" | "desc", data: DrainaseSurvey[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setDrainaseList(sortedData);
+  };
 
   const handlePreviousPage = () => {
     navigate(`?page=${currentPage - 1}`);
@@ -102,21 +127,6 @@ const DrainaseSurvey = () => {
             />
             <Search className="text-gray-400" />
           </div>
-          <div className="flex bg-white rounded-full gap-2 pl-4 items-center pr-3">
-            <Date />
-            <select
-              className="w-full md:w-[140px] rounded-full p-2 bg-white"
-              value={filterByMonth}
-              onChange={(e) => setFilterByMonth(e.target.value)}
-            >
-              <option disabled>Pilih Bulan</option>
-              {months.map((month) => (
-                <option key={month.id} value={month.id}>
-                  {month.name}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
         <div className="flex md:flex-row flex-col gap-2">
           <Link
@@ -131,10 +141,18 @@ const DrainaseSurvey = () => {
       <Table className="bg-white rounded-2xl">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">No</TableHead>
-            <TableHead className="truncate">Nama Desa</TableHead>
-            <TableHead className="truncate">Nama Kecamatan</TableHead>
-            <TableHead className="truncate">Panjang Ruas</TableHead>
+            <TableHead className="w-[100px] truncate" onClick={() => handleSort("id")}>
+              No {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_desa")}>
+              Desa {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_kecamatan")}>
+              Kecamatan {sortField === "nama_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("total_panjang_ruas")}>
+              Panjang Ruas {sortField === "total_panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
             <TableHead className="truncate"></TableHead>
           </TableRow>
         </TableHeader>
@@ -156,11 +174,10 @@ const DrainaseSurvey = () => {
           ) : (
             drainaseList.map(
               (
-                { id, total_panjang_ruas, nama_kecamatan, nama_desa },
-                index,
+                { id, total_panjang_ruas, nama_kecamatan, nama_desa }
               ) => (
                 <TableRow className="mt-10" key={id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell className="font-medium">{id}</TableCell>
                   <TableCell className="truncate cursor-pointer text-blue-500 underline">
                     <Link
                       to={`/survey-drainase/detail/${id}`}

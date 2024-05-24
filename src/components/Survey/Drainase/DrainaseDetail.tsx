@@ -51,6 +51,8 @@ const DrainaseDetail = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [sortField, setSortField] = useState<keyof Drainase>("id");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
@@ -66,6 +68,36 @@ const DrainaseDetail = () => {
 
   const handlePageChange = (page: number) => {
     navigate(`?page=${page}`);
+  };
+
+  const handleSort = (field: keyof Drainase) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, drainase);
+  };
+
+  const sortData = (field: keyof Drainase, order: "asc" | "desc", data: Drainase[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setDrainase(sortedData);
   };
 
   useEffect(() => {
@@ -203,18 +235,31 @@ const DrainaseDetail = () => {
       <Table className="bg-white rounded-2xl">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">No</TableHead>
+            <TableHead className="w-[100px] truncate" onClick={() => handleSort("id")}>
+              No {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
+              Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_desa")}>
+              Desa {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_kecamatan")}>
+              Kecamatan {sortField === "nama_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("panjang_ruas")}>
+              Panjang Ruas {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("panjang_drainase")}>
+              Panjang Drainase {sortField === "panjang_drainase" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("letak_drainase")}>
+              Letak Drainase {sortField === "letak_drainase" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("lebar_atas")}>
+              Lebar Atas {sortField === "lebar_atas" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("lebar_bawah")}>
+              Lebar Bawah {sortField === "lebar_bawah" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("tinggi")}>
+              Tinggi {sortField === "tinggi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("kondisi")}>
+              Kondisi {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
             <TableHead></TableHead>
-            <TableHead className="truncate">Nama Ruas</TableHead>
-            <TableHead className="truncate">Nama Desa</TableHead>
-            <TableHead className="truncate">Nama Kecamatan</TableHead>
-            <TableHead className="truncate">Panjang Ruas</TableHead>
-            <TableHead className="truncate">Panjang Drainase</TableHead>
-            <TableHead className="truncate">Letak Drainase</TableHead>
-            <TableHead className="truncate">Lebar Atas</TableHead>
-            <TableHead className="truncate">Lebar Bawah</TableHead>
-            <TableHead className="truncate">Tinggi</TableHead>
-            <TableHead className="truncate">Kondisi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -233,10 +278,9 @@ const DrainaseDetail = () => {
               </TableCell>
             </TableRow>
           ) : (
-            drainase.map((item, index) => (
+            drainase.map((item) => (
               <TableRow className="mt-10" key={item.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell></TableCell>
+                <TableCell className="font-medium">{item.id}</TableCell>
                 <TableCell className="truncate">{item.nama_ruas}</TableCell>
                 <TableCell className="truncate">{item.nama_desa}</TableCell>
                 <TableCell className="truncate">
@@ -254,7 +298,7 @@ const DrainaseDetail = () => {
                 <TableCell>
                   <div className="flex gap-2 items-center justify-center">
                     <Link
-                      to={`/survey-drainase/edit/${item.id}?${currentPage}`}
+                      to={`/survey-drainase/edit/${item.id}?id=${id}&page=${currentPage}`}
                       className="cursor-pointer rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center"
                     >
                       <div>
