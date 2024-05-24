@@ -45,6 +45,7 @@ const RoadSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortField, setSortField] = useState<keyof RoadSection>("no_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 

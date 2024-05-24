@@ -54,7 +54,6 @@ const DrainaseDetail = () => {
   const [sortField, setSortField] = useState<keyof Drainase>("id");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const perPage = 10;

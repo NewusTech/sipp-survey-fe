@@ -78,6 +78,8 @@ interface DataById {
   bahan: string;
   kondisi_lantai: string;
   kecamatan_id: any;
+  latitude: string;
+  longitude: string;
 }
 
 const EditBridgeSurvey = () => {
@@ -104,6 +106,8 @@ const EditBridgeSurvey = () => {
     bahan: "",
     kondisi_lantai: "",
     kecamatan_id: 0,
+    latitude: "",
+    longitude: ""
   });
 
   const currentPage = searchParams.get("page");
@@ -162,6 +166,7 @@ const EditBridgeSurvey = () => {
 
   useEffect(() => {
     if (data) {
+      setLatLong([parseFloat(data.latitude), parseFloat(data.longitude)])
       // Pastikan getData sudah ada
       form.reset({
         no_ruas: data.no_ruas,
