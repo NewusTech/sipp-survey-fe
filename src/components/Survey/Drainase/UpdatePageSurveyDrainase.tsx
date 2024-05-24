@@ -63,6 +63,7 @@ const CreatePageTypeOfPavement = () => {
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
 
   const currentPage = searchParams.get("page");
+  const idParam = searchParams.get("id");
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const updateSurvey = "detail_survey_drainase";
@@ -126,7 +127,7 @@ const CreatePageTypeOfPavement = () => {
       })
       .then((response) => {
         toast(response.data.message);
-        navigate("/survey-drainase");
+        navigate(`/survey-drainase?page=${currentPage}`)
       })
       .catch((error) => {
         console.log(error);
@@ -335,7 +336,7 @@ const CreatePageTypeOfPavement = () => {
                     </Button>
                     <Button
                       className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                      onClick={() => navigate(`/survey-drainase?page=${currentPage}`)}
+                      onClick={() => navigate(`/survey-drainase/detail/${idParam}?page=${currentPage}`)}
                     >
                       Batal
                     </Button>

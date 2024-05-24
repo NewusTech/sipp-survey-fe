@@ -26,6 +26,8 @@ const DrainaseData = ({ year }: { year: string }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortField, setSortField] = useState<keyof DrainaseSurvey>("id");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -61,6 +63,36 @@ const DrainaseData = ({ year }: { year: string }) => {
       });
   }, [currentPage]);
 
+  const handleSort = (field: keyof DrainaseSurvey) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, drainaseList);
+  };
+
+  const sortData = (field: keyof DrainaseSurvey, order: "asc" | "desc", data: DrainaseSurvey[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setDrainaseList(sortedData);
+  };
+
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
   };
@@ -78,10 +110,18 @@ const DrainaseData = ({ year }: { year: string }) => {
       <Table className="bg-white rounded-2xl mt-5">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">No</TableHead>
-            <TableHead className="truncate">Nama Desa</TableHead>
-            <TableHead className="truncate">Nama Kecamatan</TableHead>
-            <TableHead className="truncate">Panjang Ruas</TableHead>
+            <TableHead className="w-[100px] truncate" onClick={() => handleSort("id")}>
+              No {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_desa")}>
+              Desa {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_kecamatan")}>
+              Kecamatan {sortField === "nama_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("total_panjang_ruas")}>
+              Panjang Ruas {sortField === "total_panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
             <TableHead className="truncate"></TableHead>
           </TableRow>
         </TableHeader>

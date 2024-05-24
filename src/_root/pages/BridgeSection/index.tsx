@@ -15,7 +15,7 @@ import axios from "axios";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,9 +35,6 @@ import Date from "@/assets/icons/Date.tsx";
 import { months } from "@/constants";
 import Eye from "@/assets/icons/Eye.tsx";
 import BridgeSectionDetail from "@/components/shared/BridgeSectionDetail.tsx";
-// import Eye from "@/assets/icons/Eye.tsx";
-// import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
-// import BridgeDetail from "@/components/BridgeSection/BridgeDetail.tsx";
 
 interface BridgeSection {
   id: number;
@@ -77,6 +74,10 @@ const BridgeSurvey = () => {
   const [selectedId, setSelectedId] = useState<number>(0);
   const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
   const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [sortField, setSortField] = useState<keyof BridgeSection>("no_ruas");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -88,9 +89,11 @@ const BridgeSurvey = () => {
     document.title = "Ruas Jembatan - SIPPP";
 
     setIsLoading(true);
-
-    fetchRoadSections(currentPage);
-  }, [currentPage, searchTerm, filterByMonth]);
+    const pageString = searchParams.get("page");
+    const page = pageString ? parseInt(pageString) : 1;
+    setCurrentPage(page);
+    fetchRoadSections(page);
+  }, [searchParams, searchTerm, filterByMonth]);
 
   const fetchRoadSections = (page: number) => {
     axios
@@ -120,16 +123,46 @@ const BridgeSurvey = () => {
       });
   };
 
+  const handleSort = (field: keyof BridgeSection) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, bridges);
+  };
+
+  const sortData = (field: keyof BridgeSection, order: "asc" | "desc", data: BridgeSection[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setBridges(sortedData);
+  };
+
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    navigate(`?page=${currentPage - 1}`);
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    navigate(`?page=${currentPage + 1}`);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    navigate(`?page=${page}`);
   };
 
   const handleOpenModal = (id: number) => {
@@ -242,16 +275,31 @@ const BridgeSurvey = () => {
         <Table className="bg-white rounded-2xl">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">No</TableHead>
-              <TableHead className="truncate">Nama Ruas</TableHead>
-              <TableHead className="truncate">No Jembatan</TableHead>
-              <TableHead>Asal</TableHead>
-              <TableHead className="truncate">Nama Jembatan</TableHead>
-              <TableHead className="truncate">KMPOST (Km)</TableHead>
-              <TableHead>Panjang</TableHead>
-              <TableHead>Lebar</TableHead>
-              <TableHead className="truncate">Nilai Kondisi</TableHead>
-              <TableHead>Kondisi</TableHead>
+              <TableHead className="w-[100px] truncate" onClick={() => handleSort("no_ruas")}>
+                No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
+                Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("no_jembatan")}>
+                No Jembatan {sortField === "no_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("asal")}>
+                Asal {sortField === "asal" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("nama_jembatan")}>
+                Nama Jembatan {sortField === "nama_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("kmpost")}>
+                KMPOST (km) {sortField === "kmpost" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("panjang")}>
+                Panjang {sortField === "panjang" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("lebar")}>
+                Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("nilai_kondisi")}>
+                Nilai Kondisi {sortField === "nilai_kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+              <TableHead className="truncate" onClick={() => handleSort("kondisi")}>
+                Kondisi {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -323,7 +371,7 @@ const BridgeSurvey = () => {
                         <BridgeSectionDetail id={selectedId} />
                       </Dialog>
                       <div className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
-                        <Link to={`/bridge-survey/edit/${id}`}>
+                        <Link to={`/bridge-survey/edit/${id}?page=${currentPage}`}>
                           <Pencil />
                         </Link>
                       </div>

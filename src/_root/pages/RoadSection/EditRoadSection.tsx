@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import { LatLngTuple } from "leaflet";
 
 const formSchema = z.object({
@@ -44,11 +44,6 @@ const formSchema = z.object({
   file: z.custom<File[]>(),
 });
 
-// interface Corridors {
-//   id: number;
-//   name: string;
-// }
-
 interface DataById {
   nama_ruas?: string;
   panjang_ruas?: number;
@@ -68,6 +63,7 @@ interface Kecamatan {
 
 const EditRoadSection = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   // const [corridors, setCorridors] = useState<Corridors[]>([]);
   const [kecamatans, setKecamatans] = useState<Kecamatan[]>([]);
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
@@ -82,10 +78,11 @@ const EditRoadSection = () => {
     lebar: "",
     koridor_id: 0,
   });
+
+  const currentPage = searchParams.get("page");
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_APP_API_URL;
-  // const corridor = "koridor/list";
   const kecamatan = "kecamatan";
   const updateRoadSection = "ruas_jalan/update";
   const getById = "ruas_jalan/master_ruas_jalan";
@@ -102,21 +99,6 @@ const EditRoadSection = () => {
 
   useEffect(() => {
     document.title = "Ubah Ruas Jalan - SIPPP";
-
-    // axios
-    //   .get(`${apiUrl}/${corridor}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     // Setel daftar koridor ke dalam state
-    //     setCorridors(response.data.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching corridors:", error);
-    //     console.log(error);
-    //   });
 
     axios
       .get(`${apiUrl}/${kecamatan}`, {
@@ -161,7 +143,6 @@ const EditRoadSection = () => {
         kecamatan_id: getData.kecamatan_id.toString(),
         desa: getData.desa || "",
         lebar: getData.lebar || "",
-        // corridor: getData.koridor_id.toString(),
       });
     }
   }, [getData]);
@@ -170,11 +151,8 @@ const EditRoadSection = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = {
       nama: values.name,
-      // koridor_id: values.corridor,
       panjang_ruas: values.panjang,
       akses: values.access,
-      // provinsi: values.province,
-      // kabupaten: values.city,
       kecamatan_id: values.kecamatan_id,
       desa: values.desa,
       lebar: values.lebar,
@@ -200,7 +178,7 @@ const EditRoadSection = () => {
       .then((response) => {
         const data = response.data.message;
         toast(data);
-        navigate("/road-section");
+        navigate(`/road-section?page=${currentPage}`);
       })
       .catch((error) => {
         toast(error.message);
@@ -221,33 +199,6 @@ const EditRoadSection = () => {
               >
                 <div className="flex md:flex-row flex-col md:justify-between gap-0 md:gap-20 px-10 md:px-20 py-10">
                   <div className="flex flex-col w-full mt-10">
-                    {/*<FormField*/}
-                    {/*  control={form.control}*/}
-                    {/*  name="corridor"*/}
-                    {/*  render={({ field }) => (*/}
-                    {/*    <FormItem>*/}
-                    {/*      <Select*/}
-                    {/*        value={field.value?.toString()}*/}
-                    {/*        onValueChange={field.onChange}*/}
-                    {/*      >*/}
-                    {/*        <SelectTrigger className="w-[230px] md:w-[180px] border-b-2 rounded-none">*/}
-                    {/*          <SelectValue placeholder="Koridor" />*/}
-                    {/*        </SelectTrigger>*/}
-                    {/*        <SelectContent>*/}
-                    {/*          {corridors.map((corridor) => (*/}
-                    {/*            <SelectItem*/}
-                    {/*              key={corridor.id}*/}
-                    {/*              value={corridor.id.toString()}*/}
-                    {/*            >*/}
-                    {/*              {corridor.name}*/}
-                    {/*            </SelectItem>*/}
-                    {/*          ))}*/}
-                    {/*        </SelectContent>*/}
-                    {/*      </Select>*/}
-                    {/*      <FormMessage />*/}
-                    {/*    </FormItem>*/}
-                    {/*  )}*/}
-                    {/*/>*/}
                     <FormField
                       control={form.control}
                       name="name"
@@ -301,40 +252,6 @@ const EditRoadSection = () => {
                     />
                   </div>
                   <div className="flex flex-col w-full">
-                    {/*<FormField*/}
-                    {/*  control={form.control}*/}
-                    {/*  name="province"*/}
-                    {/*  render={({ field }) => (*/}
-                    {/*    <FormItem className="mt-10 md:mx-5 mx-0">*/}
-                    {/*      <FormLabel>Provinsi</FormLabel>*/}
-                    {/*      <FormControl>*/}
-                    {/*        <Input*/}
-                    {/*          {...field}*/}
-                    {/*          className="border-b-2 rounded-none"*/}
-                    {/*          placeholder="Porvinsi"*/}
-                    {/*        />*/}
-                    {/*      </FormControl>*/}
-                    {/*      <FormMessage />*/}
-                    {/*    </FormItem>*/}
-                    {/*  )}*/}
-                    {/*/>*/}
-                    {/*<FormField*/}
-                    {/*  control={form.control}*/}
-                    {/*  name="city"*/}
-                    {/*  render={({ field }) => (*/}
-                    {/*    <FormItem className="mt-10 md:mx-5 mx-0">*/}
-                    {/*      <FormLabel>Kota/Kabupaten</FormLabel>*/}
-                    {/*      <FormControl>*/}
-                    {/*        <Input*/}
-                    {/*          {...field}*/}
-                    {/*          className="border-b-2 rounded-none"*/}
-                    {/*          placeholder="Kabupaten/Kota"*/}
-                    {/*        />*/}
-                    {/*      </FormControl>*/}
-                    {/*      <FormMessage />*/}
-                    {/*    </FormItem>*/}
-                    {/*  )}*/}
-                    {/*/>*/}
                     <FormField
                       control={form.control}
                       name="access"
@@ -402,18 +319,6 @@ const EditRoadSection = () => {
                   </div>
                 </div>
                 <div className="container mx-auto">
-                  {/* <FormField
-                    control={form.control}
-                    name="file"
-                    render={({ field }) => (
-                      <FormItem className="md:mx-5 mx-0 -mt-5 mb-5">
-                        <FormControl>
-                          <MultipleUpload fileChange={field.onChange} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
                   <div className="md:px-16 px-2">
                     <MapSearch
                       defaultLat={latLong ? latLong?.[0] : -5.39714}
@@ -430,7 +335,7 @@ const EditRoadSection = () => {
                         </Button>
                         <Button
                           className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                          onClick={() => navigate("/road-section")}
+                          onClick={() => navigate(`/road-section?page=${currentPage}`)}
                         >
                           batal
                         </Button>

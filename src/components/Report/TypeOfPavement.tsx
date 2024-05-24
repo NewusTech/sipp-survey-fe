@@ -55,8 +55,6 @@ const TypeOfPavement = () => {
   const [filterByMonth, setFilterByMonth] = useState("");
   const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
   const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
-  // const [corridors, setCorridors] = useState<Corridors[]>([]);
-  // const [filterByCorridor, setFilterByCorridor] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +62,9 @@ const TypeOfPavement = () => {
   const [showCheckboxes, setShowCheckboxes] = useState<boolean>(false);
   const [isCheckedAll, setIsCheckedAll] = useState(false);
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
+  const [sortField, setSortField] = useState<keyof TypeOfPavement>("no_ruas");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -76,35 +77,6 @@ const TypeOfPavement = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    // axios
-    //   .get(`${apiUrl}/${roadSection}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     const data = response.data.data;
-    //     setRoadSections(data);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-
-    // axios
-    //   .get(`${apiUrl}/${corridor}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     // Setel daftar koridor ke dalam state
-    //     setCorridors(response.data.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching corridors:", error);
-    //     console.log(error);
-    //   });
-
     axios
       .get(`${apiUrl}/${listTypeOfPavement}`, {
         headers: {
@@ -137,6 +109,36 @@ const TypeOfPavement = () => {
     selectedWilayah,
     // filterByCorridor,
   ]);
+
+  const handleSort = (field: keyof TypeOfPavement) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortData(field, newSortOrder, typeOfPavement);
+  };
+
+  const sortData = (field: keyof TypeOfPavement, order: "asc" | "desc", data: TypeOfPavement[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      const valueA = a[field];
+      const valueB = b[field];
+
+      // Convert to number if the field is expected to be numeric but is in string format
+      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+      if (typeof numA === 'number' && typeof numB === 'number') {
+        return order === "asc" ? numA - numB : numB - numA;
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        // Handle case where the field values are of mixed types or other types
+        return 0;
+      }
+    });
+    setTypeOfPavement(sortedData);
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -295,20 +297,48 @@ const TypeOfPavement = () => {
                 </div>
               </TableHead>
             )}
-            <TableHead className="w-[100px]">No</TableHead>
-            <TableHead className="truncate">Nama Ruas</TableHead>
-            <TableHead>Kecamatan</TableHead>
-            <TableHead className="truncate">Panjang Ruas</TableHead>
-            <TableHead className="truncate">Lebar Ruas</TableHead>
-            <TableHead>Rigit</TableHead>
-            <TableHead>Hotmix</TableHead>
-            <TableHead>Lapen</TableHead>
-            <TableHead>Telford</TableHead>
-            <TableHead>Tanah</TableHead>
-            <TableHead>Baik</TableHead>
-            <TableHead>Sedang</TableHead>
-            <TableHead className="truncate">Rusak Ringan</TableHead>
-            <TableHead className="truncate">Rusak Berat</TableHead>
+            <TableHead className="w-[100px] truncate" onClick={() => handleSort("no_ruas")}>
+              No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
+              Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("name_kecamatan")}>
+              Kecamatan {sortField === "name_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("panjang_ruas")}>
+              Panjang {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("lebar")}>
+              Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("rigit")}>
+              Rigit {sortField === "rigit" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("hotmix")}>
+              Hotmix {sortField === "hotmix" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("lapen")}>
+              Lapen {sortField === "lapen" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("telford")}>
+              Telford {sortField === "telford" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("tanah")}>
+              Tanah {sortField === "tanah" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("baik")}>
+              Baik {sortField === "baik" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("sedang")}>
+              Sedang {sortField === "sedang" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("rusak_ringan")}>
+              Rusak Ringan {sortField === "rusak_ringan" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead className="truncate" onClick={() => handleSort("rusak_berat")}>
+              Rusak Berat {sortField === "rusak_berat" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -367,7 +397,7 @@ const TypeOfPavement = () => {
                     </DialogTrigger>
                     <RoadSectionDetail id={selectedId} />
                   </Dialog>
-                  <TableCell>{name_kecamatan}</TableCell>
+                  <TableCell className="truncate">{name_kecamatan}</TableCell>
                   <TableCell>{panjang_ruas}</TableCell>
                   <TableCell>{lebar || "-"}</TableCell>
                   <TableCell>{rigit || "-"}</TableCell>

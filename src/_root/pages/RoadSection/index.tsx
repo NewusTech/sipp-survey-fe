@@ -15,7 +15,7 @@ import axios from "axios";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +45,8 @@ const RoadSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortField, setSortField] = useState<keyof RoadSection>("no_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -55,9 +57,11 @@ const RoadSection = () => {
     document.title = "Ruas Jalan - SIPPP";
 
     setIsLoading(true);
-
-    fetchRoadSections(currentPage);
-  }, [currentPage]);
+    const pageString = searchParams.get("page");
+    const page = pageString ? parseInt(pageString) : 1;
+    setCurrentPage(page);
+    fetchRoadSections(page);
+  }, [searchParams]);
 
   const fetchRoadSections = (page: number) => {
     axios
@@ -115,15 +119,15 @@ const RoadSection = () => {
   };
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    navigate(`?page=${currentPage - 1}`);
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    navigate(`?page=${currentPage + 1}`);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    navigate(`?page=${page}`);
   };
 
   const onDelete = (id: number) => {
@@ -202,7 +206,7 @@ const RoadSection = () => {
                     <TableCell>{lebar}</TableCell>
                     <TableCell className="flex gap-2">
                       <div className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
-                        <Link to={`/road-section/edit/${id}`}>
+                        <Link to={`/road-section/edit/${id}?page=${currentPage}`}>
                           <Pencil />
                         </Link>
                       </div>
