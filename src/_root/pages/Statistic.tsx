@@ -1,6 +1,8 @@
 import StatisticType from "@/components/Statistic/StatisticType.tsx";
 import StatisticCondition from "@/components/Statistic/StatisticCondition.tsx";
 import { ChangeEvent, useEffect, useState } from "react";
+import StatisticBridge from "@/components/Statistic/StatisticBridge.tsx";
+import StatisticDrainase from "@/components/Statistic/StatisticDrainase.tsx";
 
 const Statistic = () => {
   const [selectedYear, setSelectedYear] = useState<string>("2024");
@@ -14,7 +16,7 @@ const Statistic = () => {
   };
 
   return (
-    <section className="bg-abu-2 w-screen h-screen overflow-scroll md:overflow-hidden">
+    <section className="bg-abu-2 w-full md:min-h-[1400px] overflow-scroll md:overflow-hidden">
       <div className="sm:ml-64 flex flex-col gap-5">
         <div className="container mx-auto mt-5">
           <h1 className="ml-6 text-gray-400 text-xl font-medium ">Statistik</h1>
@@ -34,6 +36,10 @@ const Statistic = () => {
           <div className="flex md:flex-row flex-col gap-5 mt-10 md:mt-0">
             <StatisticType year={selectedYear} />
             <StatisticCondition year={selectedYear} />
+          </div>
+          <div className="flex md:flex-row flex-col gap-5 mt-10 md:mt-10">
+            <StatisticBridge year={selectedYear} />
+            <StatisticDrainase year={selectedYear} />
           </div>
         </div>
       </div>

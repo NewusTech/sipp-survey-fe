@@ -1,32 +1,47 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L, { LatLngTuple } from "leaflet";
 import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
+// import { Map } from "lucide-react";
 
 const MapSearch: React.FC<{
   onLatLongChange: (lat: number, long: number) => void;
   defaultLat: number | undefined;
   defaultLng: number | undefined;
-}> = ({ onLatLongChange, defaultLat, defaultLng }) => {
+  type?: string;
+}> = ({ onLatLongChange, defaultLat, defaultLng, type }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [markerPosition, setMarkerPosition] = useState<LatLngTuple | null>(
     null,
   );
   const [draggable, setDraggable] = useState(false);
   const [mapCenter, setMapCenter] = useState<LatLngTuple>([
-    -4.43242555, 105.16826426180435
+    -4.43242555, 105.16826426180435,
   ]); // Default center
   const [mapZoom, setMapZoom] = useState<number>(10); // Default zoom level
 
   useEffect(() => {
     // Fetch data based on defaultLat and defaultLng when component mounts
-    if(defaultLng && defaultLat) {
+    if (defaultLng && defaultLat) {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultLat}&lon=${defaultLng}`
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultLat}&lon=${defaultLng}`,
           );
 
           if (!response.ok) {
@@ -34,7 +49,7 @@ const MapSearch: React.FC<{
           }
 
           const data = await response.json();
-          const {lat, lon} = data;
+          const { lat, lon } = data;
           setMarkerPosition([Number(lat), Number(lon)]);
           setMapCenter([Number(lat), Number(lon)]);
           setMapZoom(13); // Desired zoom level
@@ -98,30 +113,47 @@ const MapSearch: React.FC<{
     setDraggable((d) => !d);
   }, []);
 
+  const handleMapClick = (e: any) => {
+    const { lat, lng } = e.latlng;
+    setMarkerPosition([Number(lat), Number(lng)]);
+    onLatLongChange(Number(lat), Number(lng));
+  };
+
+  // A custom hook to handle map events
+  const MapClickHandler = () => {
+    useMapEvents({
+      click: handleMapClick,
+    });
+    return null;
+  };
+
   return (
     <div className="relative w-full z-10">
-      <div className="flex mb-10 gap-5 md:gap-10 md:flex-row flex-col items-center">
-        <div className="flex flex-col gap-3">
-          <label htmlFor="" className="font-medium text-sm">
-            Alamat
-          </label>
-          <Input
-            type="text"
-            value={searchQuery}
-            className="border-b-2 rounded-none md:w-[600px]"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Masukkan alamat lengkap tidak boleh disingkat..."
-          />
+      {type === "survey" ? (
+        ""
+      ) : (
+        <div className="flex mb-10 gap-5 md:gap-10 md:flex-row flex-col items-center">
+          <div className="flex flex-col gap-3">
+            <label htmlFor="" className="font-medium text-sm">
+              Alamat
+            </label>
+            <Input
+              type="text"
+              value={searchQuery}
+              className="border-b-2 rounded-none md:w-[600px]"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Masukkan alamat lengkap tidak boleh disingkat..."
+            />
+          </div>
+          <Button
+            type="button"
+            className="rounded-full bg-biru hover:bg-biru-2"
+            onClick={handleSearch}
+          >
+            Cari Alamat
+          </Button>
         </div>
-        <Button
-          type="button"
-          className="rounded-full bg-biru hover:bg-biru-2"
-          onClick={handleSearch}
-        >
-          Cari Alamat
-        </Button>
-      </div>
-
+      )}
       {/* Tambahkan MapContainer */}
       <MapContainer
         center={mapCenter}
@@ -129,7 +161,7 @@ const MapSearch: React.FC<{
         style={{ height: "300px", width: "100%" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
+        <MapClickHandler />
         {/* Tampilkan Marker jika markerPosition tidak null */}
         {markerPosition && (
           <Marker
@@ -169,7 +201,7 @@ const CustomMapFocus: React.FC<{ markerPosition: LatLngTuple | null }> = ({
   // Set fokus ke markerPosition saat markerPosition berubah
   React.useEffect(() => {
     if (markerPosition) {
-      map.setView(markerPosition, 20);
+      map.setView(markerPosition, 15);
     }
   }, [markerPosition, map]);
 

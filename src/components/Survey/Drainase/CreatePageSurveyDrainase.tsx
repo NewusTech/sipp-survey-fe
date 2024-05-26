@@ -67,13 +67,13 @@ interface DrainaseDetails {
 const CreatePageSurveyDrainase = () => {
   const [drainases, setDrainases] = useState<Drainase[]>([]);
   const [drainaseDetail, setDrainaseDetail] = useState<DrainaseDetails | null>(
-    null
+    null,
   );
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
   const filteredOptions = drainases.filter((drainase) =>
-    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase())
+    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase()),
   );
 
   const handleLatLongChange = (lat: number, long: number) => {
@@ -354,8 +354,8 @@ const CreatePageSurveyDrainase = () => {
                   {/*  )}*/}
                   {/*/>*/}
                   <MapSearch
-                    defaultLat={latLong ? latLong?.[0] : -4.43242555}
-                    defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
+                    defaultLat={latLong ? latLong?.[0] : undefined}
+                    defaultLng={latLong ? latLong?.[1] : undefined}
                     onLatLongChange={handleLatLongChange}
                   />
                   <div className="flex gap-3 justify-end">

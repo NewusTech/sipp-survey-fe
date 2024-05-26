@@ -67,6 +67,8 @@ const MapWithMarkers = ({ year }: { year: string }) => {
     popupAnchor: [1, -34],
   });
 
+  console.log(mapPointData);
+
   return (
     <MapContainer
       center={[-4.43242555, 105.16826426180435]}

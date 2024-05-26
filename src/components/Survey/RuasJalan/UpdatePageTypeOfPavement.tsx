@@ -16,6 +16,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "sonner";
+import MapSearch from "@/components/shared/Maps.tsx";
+import { LatLngTuple } from "leaflet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select.tsx";
+import { Search } from "lucide-react";
 
 const formSchema = z.object({
   rigit: z
@@ -56,9 +66,11 @@ const formSchema = z.object({
     .optional(),
   lhr: z.string().optional(),
   keterangan: z.string().optional(),
+  corridor: z.string().transform((val) => Number(val)),
 });
 
 interface DataById {
+  ruas_jalan_id: any;
   rigit: any;
   hotmix: any;
   lapen: any;
@@ -72,23 +84,69 @@ interface DataById {
   keterangan: string;
 }
 
+interface RoadSectionDetails {
+  no_ruas: string;
+  panjang_ruas: number;
+  name_koridor: string;
+}
+
+interface RoadSections {
+  id: number;
+  no_ruas: string;
+  nama: string;
+  kabupaten: string;
+  panjang_ruas: number;
+  corridor: number;
+}
+
 const CreatePageTypeOfPavement = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const [getTypeOfPavement, setGetTypeOfPavement] = useState<DataById | null>(
-    null
+    null,
+  );
+  const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
+  const [roadSectionDetail, setRoadSectionDetail] = useState<
+    RoadSectionDetails[]
+  >([]);
+  const [searchInput, setSearchInput] = useState(""); // State for search input
+  const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
+  const filteredOptions = roadSections.filter((roadSection) =>
+    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase()),
   );
   const currentPage = searchParams.get("page");
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const updateSurvey = "survey/jenis_perkerasan";
   const getById = "survey/jenis_perkerasan";
+  const getByNoRuas = "ruas_jalan/listbyid";
+  const roadSection = "ruas_jalan/list";
   const token = Cookies.get("adsxcl");
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  const handleLatLongChange = (lat: number, long: number) => {
+    setLatLong([lat, long]);
+  };
+
+  useEffect(() => {
+    axios
+      .get(`${apiUrl}/${roadSection}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const data = response.data.data;
+        setRoadSections(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   useEffect(() => {
     axios
@@ -105,8 +163,34 @@ const CreatePageTypeOfPavement = () => {
   }, [id]);
 
   useEffect(() => {
+    if (form.getValues("corridor")) {
+      axios
+        .get(`${apiUrl}/${getByNoRuas}/${form.getValues("corridor")}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setRoadSectionDetail(data);
+          console.log(data[0].latitude);
+          setLatLong([
+            parseFloat(data[0].latitude),
+            parseFloat(data[0].longitude),
+          ]);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [form.getValues("corridor")]);
+
+  console.log(getTypeOfPavement);
+
+  useEffect(() => {
     if (getTypeOfPavement) {
       form.reset({
+        corridor: getTypeOfPavement.ruas_jalan_id?.toString(),
         rigit: getTypeOfPavement.rigit?.toString() || "",
         hotmix: getTypeOfPavement.hotmix?.toString() || "",
         lapen: getTypeOfPavement.lapen?.toString() || "",
@@ -125,6 +209,7 @@ const CreatePageTypeOfPavement = () => {
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = {
+      ruas_jalan_id: values.corridor,
       rigit: values.rigit,
       hotmix: values.hotmix,
       lapen: values.lapen,
@@ -168,6 +253,58 @@ const CreatePageTypeOfPavement = () => {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-8"
                 >
+                  <div className="flex gap-2 items-center justify-around">
+                    <p>{roadSectionDetail && roadSectionDetail[0]?.no_ruas}</p>
+                    <FormField
+                      control={form.control}
+                      name="corridor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ruas Jalan</FormLabel>
+                          <Select
+                            value={field.value?.toString()}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger
+                                name="corridor"
+                                className="md:w-[180px] w-[150px] border-b-2 rounded-none"
+                              >
+                                <SelectValue placeholder="Ruas Jalan" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <div className="px-2 flex items-center justify-between">
+                                <Search className="text-slate-400" />
+                                <Input
+                                  className="border-b"
+                                  placeholder="Search..."
+                                  value={searchInput}
+                                  onChange={(event) =>
+                                    setSearchInput(event.target.value)
+                                  }
+                                />
+                              </div>
+                              {filteredOptions.map((roadSection) => (
+                                <SelectItem
+                                  key={roadSection.id}
+                                  value={roadSection.id.toString()}
+                                >
+                                  <h2 className="font-semibold">
+                                    {roadSection.nama}
+                                  </h2>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <p>
+                      {roadSectionDetail && roadSectionDetail[0]?.panjang_ruas}
+                    </p>
+                  </div>
                   <div className="flex gap-5">
                     <div className="flex w-full flex-col gap-3">
                       <FormField
@@ -361,6 +498,12 @@ const CreatePageTypeOfPavement = () => {
                       />
                     </div>
                   </div>
+                  <MapSearch
+                    defaultLat={latLong ? latLong?.[0] : undefined}
+                    defaultLng={latLong ? latLong?.[1] : undefined}
+                    onLatLongChange={handleLatLongChange}
+                    type="survey"
+                  />
                   <div className="flex gap-3 justify-end">
                     <Button
                       type="submit"

@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
-import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { LatLngTuple } from "leaflet";
 
 const formSchema = z.object({
@@ -124,6 +124,7 @@ const EditRoadSection = () => {
       .then((response) => {
         const data = response.data.data;
         setGetData(data);
+        setLatLong([parseFloat(data.latitude), parseFloat(data.longitude)]);
       })
       .catch((error) => {
         console.error("Error fetching road section by id:", error);
@@ -159,14 +160,14 @@ const EditRoadSection = () => {
       koridor_id: 1,
       latitude: latLong?.[0],
       longitude: latLong?.[1],
-      images: [] as File[],
+      // images: [] as File[],
     };
 
-    const files = values.file || [];
-
-    files.forEach((file: File) => {
-      formData.images.push(file);
-    });
+    // const files = values.file || [];
+    //
+    // files.forEach((file: File) => {
+    //   formData.images.push(file);
+    // });
 
     axios
       .post(`${apiUrl}/${updateRoadSection}/${id}`, formData, {
@@ -184,6 +185,7 @@ const EditRoadSection = () => {
         toast(error.message);
         console.log(error);
       });
+    console.log(values, latLong);
   }
 
   return (
@@ -321,8 +323,8 @@ const EditRoadSection = () => {
                 <div className="container mx-auto">
                   <div className="md:px-16 px-2">
                     <MapSearch
-                      defaultLat={latLong ? latLong?.[0] : -5.39714}
-                      defaultLng={latLong ? latLong?.[1] : 105.26679}
+                      defaultLat={latLong ? latLong?.[0] : undefined}
+                      defaultLng={latLong ? latLong?.[1] : undefined}
                       onLatLongChange={handleLatLongChange}
                     />
                     <div className="flex gap-4 md:mx-5 mx-0 mt-10 justify-center md:justify-end my-10">
@@ -335,7 +337,9 @@ const EditRoadSection = () => {
                         </Button>
                         <Button
                           className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                          onClick={() => navigate(`/road-section?page=${currentPage}`)}
+                          onClick={() =>
+                            navigate(`/road-section?page=${currentPage}`)
+                          }
                         >
                           batal
                         </Button>

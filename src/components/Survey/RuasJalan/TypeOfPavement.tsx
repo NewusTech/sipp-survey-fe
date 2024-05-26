@@ -29,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog.tsx";
 import { months } from "@/constants";
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "@/components/shared/Loader.tsx";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import ImportRoadSection from "@/components/Survey/RuasJalan/ImportRoadSection.tsx";
@@ -99,7 +99,7 @@ const TypeOfPavement = () => {
           perPage: perPage,
           search: searchTerm,
           month: filterByMonth,
-          wilayah: selectedWilayah,
+          kecamatan_id: selectedWilayah,
         },
       })
       .then((response) => {
@@ -132,24 +132,35 @@ const TypeOfPavement = () => {
   }, []);
 
   const handleSort = (field: keyof TypeOfPavement) => {
-    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
     sortData(field, newSortOrder, typeOfPavement);
   };
 
-  const sortData = (field: keyof TypeOfPavement, order: "asc" | "desc", data: TypeOfPavement[]) => {
+  const sortData = (
+    field: keyof TypeOfPavement,
+    order: "asc" | "desc",
+    data: TypeOfPavement[],
+  ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
       const valueB = b[field];
 
       // Convert to number if the field is expected to be numeric but is in string format
-      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
-      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+      const numA =
+        typeof valueA === "string" && !isNaN(Number(valueA))
+          ? Number(valueA)
+          : valueA;
+      const numB =
+        typeof valueB === "string" && !isNaN(Number(valueB))
+          ? Number(valueB)
+          : valueB;
 
-      if (typeof numA === 'number' && typeof numB === 'number') {
+      if (typeof numA === "number" && typeof numB === "number") {
         return order === "asc" ? numA - numB : numB - numA;
-      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      } else if (typeof valueA === "string" && typeof valueB === "string") {
         return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
@@ -162,11 +173,11 @@ const TypeOfPavement = () => {
   };
 
   const handlePreviousPage = () => {
-      navigate(`?page=${currentPage - 1}`);
+    navigate(`?page=${currentPage - 1}`);
   };
 
   const handleNextPage = () => {
-      navigate(`?page=${currentPage + 1}`);
+    navigate(`?page=${currentPage + 1}`);
   };
 
   const handlePageChange = (page: number) => {
@@ -182,7 +193,7 @@ const TypeOfPavement = () => {
       })
       .then(() => {
         setTypeOfPavement((prevRoadSections) =>
-          prevRoadSections.filter((section) => section.id !== id)
+          prevRoadSections.filter((section) => section.id !== id),
         );
         toast("Berhasil delete data");
       })
@@ -233,7 +244,7 @@ const TypeOfPavement = () => {
             >
               <option disabled>Pilih Wilayah</option>
               {roadSections.map((roadSection) => (
-                <option key={roadSection.id} value={roadSection.name}>
+                <option key={roadSection.id} value={roadSection.id}>
                   {roadSection.name}
                 </option>
               ))}
@@ -263,20 +274,38 @@ const TypeOfPavement = () => {
       <Table className="bg-white rounded-2xl">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px] truncate" onClick={() => handleSort("no_ruas")}>
+            <TableHead
+              className="w-[100px] truncate"
+              onClick={() => handleSort("no_ruas")}
+            >
               No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
-              Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nama_ruas")}
+            >
+              Nama Ruas{" "}
+              {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("name_kecamatan")}>
-              Kecamatan {sortField === "name_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("name_kecamatan")}
+            >
+              Kecamatan{" "}
+              {sortField === "name_kecamatan" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("panjang_ruas")}>
-              Panjang Ruas {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("panjang_ruas")}
+            >
+              Panjang Ruas{" "}
+              {sortField === "panjang_ruas" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
             <TableHead className="truncate" onClick={() => handleSort("lebar")}>
-              Lebar Ruas {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+              Lebar Ruas{" "}
+              {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -377,7 +406,7 @@ const TypeOfPavement = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           )}
         </TableBody>

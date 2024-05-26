@@ -10,8 +10,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Loader from "@/components/shared/Loader.tsx";
-import {Link, useNavigate, useParams, useSearchParams} from "react-router-dom";
-import { FileText, Plus } from "lucide-react";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { FileText, Plus, Search } from "lucide-react";
 import Paginations from "@/components/shared/Paginations.tsx";
 import {
   AlertDialog,
@@ -28,6 +33,9 @@ import { Button } from "@/components/ui/button.tsx";
 import Trash from "@/assets/icons/Trash.tsx";
 import Pencil from "@/assets/icons/Pencil.tsx";
 import { toast } from "sonner";
+import { months } from "@/constants";
+import { Input } from "@/components/ui/input.tsx";
+import Date from "@/assets/icons/Date.tsx";
 
 interface Drainase {
   id: number;
@@ -49,6 +57,8 @@ const DrainaseDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [filterByMonth, setFilterByMonth] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [sortField, setSortField] = useState<keyof Drainase>("id");
@@ -71,24 +81,35 @@ const DrainaseDetail = () => {
   };
 
   const handleSort = (field: keyof Drainase) => {
-    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
     sortData(field, newSortOrder, drainase);
   };
 
-  const sortData = (field: keyof Drainase, order: "asc" | "desc", data: Drainase[]) => {
+  const sortData = (
+    field: keyof Drainase,
+    order: "asc" | "desc",
+    data: Drainase[],
+  ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
       const valueB = b[field];
 
       // Convert to number if the field is expected to be numeric but is in string format
-      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
-      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+      const numA =
+        typeof valueA === "string" && !isNaN(Number(valueA))
+          ? Number(valueA)
+          : valueA;
+      const numB =
+        typeof valueB === "string" && !isNaN(Number(valueB))
+          ? Number(valueB)
+          : valueB;
 
-      if (typeof numA === 'number' && typeof numB === 'number') {
+      if (typeof numA === "number" && typeof numB === "number") {
         return order === "asc" ? numA - numB : numB - numA;
-      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      } else if (typeof valueA === "string" && typeof valueB === "string") {
         return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
@@ -114,7 +135,9 @@ const DrainaseDetail = () => {
           params: {
             desa_id: id,
             page: page,
+            month: filterByMonth,
             perPage: perPage,
+            search: searchTerm,
           },
         })
         .then((response) => {
@@ -129,7 +152,7 @@ const DrainaseDetail = () => {
           setIsLoading(false);
         });
     }
-  }, [id, searchParams]);
+  }, [id, searchParams, searchTerm, filterByMonth]);
 
   const onDelete = (id: number) => {
     axios
@@ -172,46 +195,31 @@ const DrainaseDetail = () => {
     <section className="sm:ml-64 px-10 bg-abu-2 w-screen md:h-[1050px] overflow-scroll md:overflow-hidden">
       <div className="flex justify-between my-4 md:flex-row flex-col gap-3 md:gap-0">
         <div className="flex flex-col md:flex-row gap-5">
-          {/*  <div className="bg-white flex items-center justify-between px-3 gap-2 rounded-full">*/}
-          {/*    <Input*/}
-          {/*      type="text"*/}
-          {/*      className="border-none rounded-full w-32"*/}
-          {/*      placeholder="Search"*/}
-          {/*      value={searchTerm}*/}
-          {/*      onChange={(e) => setSearchTerm(e.target.value)}*/}
-          {/*    />*/}
-          {/*    <Search className="text-gray-400" />*/}
-          {/*  </div>*/}
-          {/*  <div className="flex bg-white rounded-full gap-2 pl-4 items-center pr-3">*/}
-          {/*    <Date />*/}
-          {/*    <select*/}
-          {/*      className="w-full md:w-[140px] rounded-full p-2 bg-white"*/}
-          {/*      value={filterByMonth}*/}
-          {/*      onChange={(e) => setFilterByMonth(e.target.value)}*/}
-          {/*    >*/}
-          {/*      <option disabled>Pilih Bulan</option>*/}
-          {/*      {months.map((month) => (*/}
-          {/*        <option key={month.id} value={month.id}>*/}
-          {/*          {month.name}*/}
-          {/*        </option>*/}
-          {/*      ))}*/}
-          {/*    </select>*/}
-          {/*  </div>*/}
-          {/*  <div className="flex md:items-center items-start gap-2 md:flex-row flex-col">*/}
-          {/*    <h4 className="text-gray-400">Desa : </h4>*/}
-          {/*    <select*/}
-          {/*      className="w-full md:w-[140px] rounded-full p-2 bg-white"*/}
-          {/*      value={selectedWilayah}*/}
-          {/*      onChange={(e) => setSelectedWilayah(e.target.value)}*/}
-          {/*    >*/}
-          {/*      <option disabled>Pilih Wilayah</option>*/}
-          {/*      {villages.map((village) => (*/}
-          {/*        <option key={village.id} value={village.id}>*/}
-          {/*          {village.nama}*/}
-          {/*        </option>*/}
-          {/*      ))}*/}
-          {/*    </select>*/}
-          {/*  </div>*/}
+          <div className="bg-white flex items-center justify-between px-3 gap-2 rounded-full">
+            <Input
+              type="text"
+              className="border-none rounded-full w-32"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Search className="text-gray-400" />
+          </div>
+          <div className="flex bg-white rounded-full gap-2 pl-4 items-center pr-3">
+            <Date />
+            <select
+              className="w-full md:w-[140px] rounded-full p-2 bg-white"
+              value={filterByMonth}
+              onChange={(e) => setFilterByMonth(e.target.value)}
+            >
+              <option disabled>Pilih Bulan</option>
+              {months.map((month) => (
+                <option key={month.id} value={month.id}>
+                  {month.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex md:flex-row flex-col gap-2">
@@ -235,30 +243,86 @@ const DrainaseDetail = () => {
       <Table className="bg-white rounded-2xl">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px] truncate" onClick={() => handleSort("id")}>
+            <TableHead
+              className="w-[100px] truncate"
+              onClick={() => handleSort("id")}
+            >
               No {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
-              Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nama_desa")}>
-              Desa {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nama_kecamatan")}>
-              Kecamatan {sortField === "nama_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("panjang_ruas")}>
-              Panjang Ruas {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nama_ruas")}
+            >
+              Nama Ruas{" "}
+              {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("panjang_drainase")}>
-              Panjang Drainase {sortField === "panjang_drainase" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("letak_drainase")}>
-              Letak Drainase {sortField === "letak_drainase" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("lebar_atas")}>
-              Lebar Atas {sortField === "lebar_atas" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("lebar_bawah")}>
-              Lebar Bawah {sortField === "lebar_bawah" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("tinggi")}>
-              Tinggi {sortField === "tinggi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("kondisi")}>
-              Kondisi {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nama_desa")}
+            >
+              Desa{" "}
+              {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nama_kecamatan")}
+            >
+              Kecamatan{" "}
+              {sortField === "nama_kecamatan" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("panjang_ruas")}
+            >
+              Panjang Ruas{" "}
+              {sortField === "panjang_ruas" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("panjang_drainase")}
+            >
+              Panjang Drainase{" "}
+              {sortField === "panjang_drainase" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("letak_drainase")}
+            >
+              Letak Drainase{" "}
+              {sortField === "letak_drainase" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("lebar_atas")}
+            >
+              Lebar Atas{" "}
+              {sortField === "lebar_atas" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("lebar_bawah")}
+            >
+              Lebar Bawah{" "}
+              {sortField === "lebar_bawah" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("tinggi")}
+            >
+              Tinggi{" "}
+              {sortField === "tinggi" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("kondisi")}
+            >
+              Kondisi{" "}
+              {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
