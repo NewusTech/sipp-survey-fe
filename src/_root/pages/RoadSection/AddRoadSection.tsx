@@ -257,40 +257,6 @@ const AddRoadSection = () => {
                         </FormItem>
                       )}
                     />
-                    {/*<FormField*/}
-                    {/*  control={form.control}*/}
-                    {/*  name="province"*/}
-                    {/*  render={({ field }) => (*/}
-                    {/*    <FormItem className="mt-10 md:mx-5 mx-0">*/}
-                    {/*      <FormLabel>Provinsi</FormLabel>*/}
-                    {/*      <FormControl>*/}
-                    {/*        <Input*/}
-                    {/*          {...field}*/}
-                    {/*          className="border-b-2 rounded-none"*/}
-                    {/*          placeholder="Porvinsi"*/}
-                    {/*        />*/}
-                    {/*      </FormControl>*/}
-                    {/*      <FormMessage />*/}
-                    {/*    </FormItem>*/}
-                    {/*  )}*/}
-                    {/*/>*/}
-                    {/*<FormField*/}
-                    {/*  control={form.control}*/}
-                    {/*  name="city"*/}
-                    {/*  render={({ field }) => (*/}
-                    {/*    <FormItem className="mt-10 md:mx-5 mx-0">*/}
-                    {/*      <FormLabel>Kota/Kabupaten</FormLabel>*/}
-                    {/*      <FormControl>*/}
-                    {/*        <Input*/}
-                    {/*          {...field}*/}
-                    {/*          className="border-b-2 rounded-none"*/}
-                    {/*          placeholder="Kabupaten/Kota"*/}
-                    {/*        />*/}
-                    {/*      </FormControl>*/}
-                    {/*      <FormMessage />*/}
-                    {/*    </FormItem>*/}
-                    {/*  )}*/}
-                    {/*/>*/}
                     <FormField
                       control={form.control}
                       name="kecamatan_id"
