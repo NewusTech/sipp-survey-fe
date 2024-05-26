@@ -71,25 +71,11 @@ const AddRoadSection = () => {
 
   const handleLatLongChange = (lat: number, long: number) => {
     setLatLong([lat, long]);
+    console.log("LatLong Updated:", [lat, long]);
   };
 
   useEffect(() => {
     document.title = "Tambah Ruas Jalan - SIPPP";
-
-    // axios
-    //   .get(`${apiUrl}/${corridor}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     // Setel daftar koridor ke dalam state
-    //     setCorridors(response.data.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching corridors:", error);
-    //     console.log(error);
-    //   });
 
     axios
       .get(`${apiUrl}/${kecamatanData}`, {
@@ -123,6 +109,10 @@ const AddRoadSection = () => {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!latLong) {
+      toast("Please select a location on the map");
+      return;
+    }
     const formData = {
       no_ruas: values.no_ruas,
       nama: values.name,
@@ -160,7 +150,7 @@ const AddRoadSection = () => {
         toast(error.message);
         console.log(error);
       });
-    console.log(values);
+    console.log(values, latLong);
   }
 
   return (
@@ -196,33 +186,6 @@ const AddRoadSection = () => {
                           </FormItem>
                         )}
                       />
-                      {/*<FormField*/}
-                      {/*  control={form.control}*/}
-                      {/*  name="corridor"*/}
-                      {/*  render={({ field }) => (*/}
-                      {/*    <FormItem>*/}
-                      {/*      <Select*/}
-                      {/*        value={field.value?.toString()}*/}
-                      {/*        onValueChange={field.onChange}*/}
-                      {/*      >*/}
-                      {/*        <SelectTrigger className="w-[230px] md:w-[180px] border-b-2 rounded-none">*/}
-                      {/*          <SelectValue placeholder="Koridor" />*/}
-                      {/*        </SelectTrigger>*/}
-                      {/*        <SelectContent>*/}
-                      {/*          {corridors.map((corridor) => (*/}
-                      {/*            <SelectItem*/}
-                      {/*              key={corridor.id}*/}
-                      {/*              value={corridor.id.toString()}*/}
-                      {/*            >*/}
-                      {/*              {corridor.name}*/}
-                      {/*            </SelectItem>*/}
-                      {/*          ))}*/}
-                      {/*        </SelectContent>*/}
-                      {/*      </Select>*/}
-                      {/*      <FormMessage />*/}
-                      {/*    </FormItem>*/}
-                      {/*  )}*/}
-                      {/*/>*/}
                     </div>
                     <FormField
                       control={form.control}
@@ -392,8 +355,8 @@ const AddRoadSection = () => {
                   {/*/>*/}
                   <div className="md:px-16 px-2">
                     <MapSearch
-                      defaultLat={latLong ? latLong?.[0] : -4.43242555}
-                      defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
+                      defaultLat={latLong ? latLong?.[0] : undefined}
+                      defaultLng={latLong ? latLong?.[1] : undefined}
                       onLatLongChange={handleLatLongChange}
                     />
                     <div className="flex gap-4 md:mx-5 mx-0 mt-10 justify-center md:justify-end my-10">

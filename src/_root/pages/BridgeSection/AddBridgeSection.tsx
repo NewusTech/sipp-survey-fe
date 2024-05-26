@@ -528,8 +528,8 @@ const AddBridgeSection = () => {
                   {/*/>*/}
                   <div className="md:px-16 px-2">
                     <MapSearch
-                      defaultLat={latLong ? latLong?.[0] : -5.39714}
-                      defaultLng={latLong ? latLong?.[1] : 105.26679}
+                      defaultLat={latLong ? latLong?.[0] : undefined}
+                      defaultLng={latLong ? latLong?.[1] : undefined}
                       onLatLongChange={handleLatLongChange}
                     />
                     <div className="flex gap-4 md:mx-5 mx-0 mt-10 justify-center md:justify-end my-10">

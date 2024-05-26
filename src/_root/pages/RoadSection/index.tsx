@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/table";
 import Pencil from "@/assets/icons/Pencil.tsx";
 import Trash from "@/assets/icons/Trash.tsx";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { toast } from "sonner";
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog.tsx";
 import Loader from "@/components/shared/Loader.tsx";
+import { Input } from "@/components/ui/input.tsx";
 
 interface RoadSection {
   id: number;
@@ -42,6 +43,7 @@ const RoadSection = () => {
   const [roadSections, setRoadSections] = useState<RoadSection[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortField, setSortField] = useState<keyof RoadSection>("no_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -62,7 +64,7 @@ const RoadSection = () => {
     const page = pageString ? parseInt(pageString) : 1;
     setCurrentPage(page);
     fetchRoadSections(page);
-  }, [searchParams]);
+  }, [searchParams, searchTerm]);
 
   const fetchRoadSections = (page: number) => {
     axios
@@ -73,12 +75,13 @@ const RoadSection = () => {
         params: {
           page: page,
           perPage: perPage,
+          search: searchTerm,
         },
       })
       .then((response) => {
         const data = response.data.data.data;
         setRoadSections(data);
-        console.log(data)
+        console.log(data);
         setTotalPages(Math.ceil(response.data.data.total / perPage));
       })
       .catch((error) => {
@@ -90,24 +93,35 @@ const RoadSection = () => {
   };
 
   const handleSort = (field: keyof RoadSection) => {
-    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
     sortData(field, newSortOrder, roadSections);
   };
 
-  const sortData = (field: keyof RoadSection, order: "asc" | "desc", data: RoadSection[]) => {
+  const sortData = (
+    field: keyof RoadSection,
+    order: "asc" | "desc",
+    data: RoadSection[],
+  ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
       const valueB = b[field];
 
       // Convert to number if the field is expected to be numeric but is in string format
-      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
-      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+      const numA =
+        typeof valueA === "string" && !isNaN(Number(valueA))
+          ? Number(valueA)
+          : valueA;
+      const numB =
+        typeof valueB === "string" && !isNaN(Number(valueB))
+          ? Number(valueB)
+          : valueB;
 
-      if (typeof numA === 'number' && typeof numB === 'number') {
+      if (typeof numA === "number" && typeof numB === "number") {
         return order === "asc" ? numA - numB : numB - numA;
-      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      } else if (typeof valueA === "string" && typeof valueB === "string") {
         return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
@@ -154,30 +168,50 @@ const RoadSection = () => {
       <div className="p-4 sm:ml-64 flex flex-col gap-5">
         <div className="md:flex-row flex-col md:justify-between ">
           <h1 className="text-2xl text-gray-400">Ruas Jalan</h1>
-          <Link to="/road-section/create" className="text-white">
-            <div className="flex justify-center bg-biru hover:bg-biru-2 px-5 py-2 md:py-1 items-center gap-3 rounded-full mt-7">
-              Add New
-              <Plus className="text-white" />
+          <div className="flex flex-col md:flex-row justify-between items-center gap-5">
+            <div className="bg-white flex items-center justify-between px-3 gap-2 rounded-full">
+              <Input
+                type="text"
+                className="border-none rounded-full w-32"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="text-gray-400" />
             </div>
-          </Link>
+            <Link to="/road-section/create" className="text-white">
+              <div className="flex justify-center bg-biru hover:bg-biru-2 px-5 py-2 md:py-1 items-center gap-3 rounded-full mt-7">
+                Add New
+                <Plus className="text-white" />
+              </div>
+            </Link>
+          </div>
         </div>
         <Table className="bg-white rounded-2xl">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]" onClick={() => handleSort("no_ruas")}>
-                No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              <TableHead
+                className="w-[100px]"
+                onClick={() => handleSort("no_ruas")}
+              >
+                No{" "}
+                {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("nama")}>
                 Nama {sortField === "nama" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("kecamatan")}>
-                Kecamatan {sortField === "kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+                Kecamatan{" "}
+                {sortField === "kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("panjang_ruas")}>
-                Panjang {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+                Panjang{" "}
+                {sortField === "panjang_ruas" &&
+                  (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("lebar")}>
-                Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+                Lebar{" "}
+                {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -207,7 +241,9 @@ const RoadSection = () => {
                     <TableCell>{lebar}</TableCell>
                     <TableCell className="flex gap-2">
                       <div className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
-                        <Link to={`/road-section/edit/${id}?page=${currentPage}`}>
+                        <Link
+                          to={`/road-section/edit/${id}?page=${currentPage}`}
+                        >
                           <Pencil />
                         </Link>
                       </div>

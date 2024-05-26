@@ -45,6 +45,9 @@ const StatisticCondition = ({ year }: { year: string }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: {
+              year: year,
+            },
           },
         );
 
@@ -95,7 +98,7 @@ const StatisticCondition = ({ year }: { year: string }) => {
     };
 
     fetchData();
-  }, []);
+  }, [year]);
 
   const options = {
     plugins: {
@@ -105,15 +108,25 @@ const StatisticCondition = ({ year }: { year: string }) => {
     },
   };
 
+  const isDataEmpty = (data: any) => {
+    return data.every((value: any) => value === 0);
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full md:w-[80vh] xl:w-[49%]">
       <div className="bg-white rounded-xl p-5">
         <h3 className="text-lg text-biru font-medium pb-10">
-          Kondisi Perkerasan
+          Kondisi Perkerasan Jalan
         </h3>
         <div className="flex flex-col items-center justify-center my-6 gap-5">
           <div className="w-48 h-48">
-            {chartData && <Doughnut data={chartData} options={options} />}
+            {chartData && !isDataEmpty(chartData.datasets[0].data) ? (
+              <Doughnut data={chartData} options={options} />
+            ) : (
+              <p className="text-center text-black w-full">
+                Tidak ada data pada tahun {year}
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-4 gap-2 px-10">
             <Dialog>

@@ -15,7 +15,7 @@ import axios from "axios";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { toast } from "sonner";
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -93,7 +93,7 @@ const BridgeSurvey = () => {
     const page = pageString ? parseInt(pageString) : 1;
     setCurrentPage(page);
     fetchRoadSections(page);
-  }, [searchParams, searchTerm, filterByMonth]);
+  }, [searchParams, searchTerm, filterByMonth, selectedWilayah]);
 
   const fetchRoadSections = (page: number) => {
     axios
@@ -106,7 +106,7 @@ const BridgeSurvey = () => {
           perPage: perPage,
           search: searchTerm,
           month: filterByMonth,
-          wilayah: selectedWilayah,
+          kecamatan_id: selectedWilayah,
         },
       })
       .then((response) => {
@@ -124,24 +124,35 @@ const BridgeSurvey = () => {
   };
 
   const handleSort = (field: keyof BridgeSection) => {
-    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
     sortData(field, newSortOrder, bridges);
   };
 
-  const sortData = (field: keyof BridgeSection, order: "asc" | "desc", data: BridgeSection[]) => {
+  const sortData = (
+    field: keyof BridgeSection,
+    order: "asc" | "desc",
+    data: BridgeSection[],
+  ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
       const valueB = b[field];
 
       // Convert to number if the field is expected to be numeric but is in string format
-      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
-      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+      const numA =
+        typeof valueA === "string" && !isNaN(Number(valueA))
+          ? Number(valueA)
+          : valueA;
+      const numB =
+        typeof valueB === "string" && !isNaN(Number(valueB))
+          ? Number(valueB)
+          : valueB;
 
-      if (typeof numA === 'number' && typeof numB === 'number') {
+      if (typeof numA === "number" && typeof numB === "number") {
         return order === "asc" ? numA - numB : numB - numA;
-      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      } else if (typeof valueA === "string" && typeof valueB === "string") {
         return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
@@ -178,7 +189,7 @@ const BridgeSurvey = () => {
       })
       .then(() => {
         setBridges((prevBrideSections) =>
-          prevBrideSections.filter((section) => section.id !== id)
+          prevBrideSections.filter((section) => section.id !== id),
         );
         toast("Berhasil delete data");
       })
@@ -244,7 +255,7 @@ const BridgeSurvey = () => {
                 >
                   <option disabled>Pilih Wilayah</option>
                   {roadSections.map((roadSection) => (
-                    <option key={roadSection.id} value={roadSection.name}>
+                    <option key={roadSection.id} value={roadSection.id}>
                       {roadSection.name}
                     </option>
                   ))}
@@ -275,31 +286,75 @@ const BridgeSurvey = () => {
         <Table className="bg-white rounded-2xl">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px] truncate" onClick={() => handleSort("no_ruas")}>
-                No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              <TableHead
+                className="w-[100px] truncate"
+                onClick={() => handleSort("no_ruas")}
+              >
+                No{" "}
+                {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
-                Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nama_ruas")}
+              >
+                Nama Ruas{" "}
+                {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("no_jembatan")}>
-                No Jembatan {sortField === "no_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("no_jembatan")}
+              >
+                No Jembatan{" "}
+                {sortField === "no_jembatan" &&
+                  (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("asal")}>
                 Asal {sortField === "asal" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("nama_jembatan")}>
-                Nama Jembatan {sortField === "nama_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nama_jembatan")}
+              >
+                Nama Jembatan{" "}
+                {sortField === "nama_jembatan" &&
+                  (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("kmpost")}>
-                KMPOST (km) {sortField === "kmpost" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("panjang")}>
-                Panjang {sortField === "panjang" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("lebar")}>
-                Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("nilai_kondisi")}>
-                Nilai Kondisi {sortField === "nilai_kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-              <TableHead className="truncate" onClick={() => handleSort("kondisi")}>
-                Kondisi {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("kmpost")}
+              >
+                KMPOST (km){" "}
+                {sortField === "kmpost" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("panjang")}
+              >
+                Panjang{" "}
+                {sortField === "panjang" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("lebar")}
+              >
+                Lebar{" "}
+                {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nilai_kondisi")}
+              >
+                Nilai Kondisi{" "}
+                {sortField === "nilai_kondisi" &&
+                  (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("kondisi")}
+              >
+                Kondisi{" "}
+                {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -333,7 +388,7 @@ const BridgeSurvey = () => {
                     nilai_kondisi,
                     kondisi,
                   },
-                  index
+                  index,
                 ) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{no_ruas}</TableCell>
@@ -371,7 +426,9 @@ const BridgeSurvey = () => {
                         <BridgeSectionDetail id={selectedId} />
                       </Dialog>
                       <div className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
-                        <Link to={`/bridge-survey/edit/${id}?page=${currentPage}`}>
+                        <Link
+                          to={`/bridge-survey/edit/${id}?page=${currentPage}`}
+                        >
                           <Pencil />
                         </Link>
                       </div>
@@ -405,7 +462,7 @@ const BridgeSurvey = () => {
                       </AlertDialog>
                     </TableCell>
                   </TableRow>
-                )
+                ),
               )
             )}
           </TableBody>

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -127,7 +127,7 @@ const CreatePageTypeOfPavement = () => {
       })
       .then((response) => {
         toast(response.data.message);
-        navigate(`/survey-drainase?page=${currentPage}`)
+        navigate(`/survey-drainase?page=${currentPage}`);
       })
       .catch((error) => {
         console.log(error);
@@ -323,8 +323,8 @@ const CreatePageTypeOfPavement = () => {
                     </div>
                   </div>
                   <MapSearch
-                    defaultLat={latLong ? latLong?.[0] : -4.43242555}
-                    defaultLng={latLong ? latLong?.[1] : 105.16826426180435}
+                    defaultLat={latLong ? latLong?.[0] : undefined}
+                    defaultLng={latLong ? latLong?.[1] : undefined}
                     onLatLongChange={handleLatLongChange}
                   />
                   <div className="flex gap-3 justify-end">
@@ -336,7 +336,11 @@ const CreatePageTypeOfPavement = () => {
                     </Button>
                     <Button
                       className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
-                      onClick={() => navigate(`/survey-drainase/detail/${idParam}?page=${currentPage}`)}
+                      onClick={() =>
+                        navigate(
+                          `/survey-drainase/detail/${idParam}?page=${currentPage}`,
+                        )
+                      }
                     >
                       Batal
                     </Button>

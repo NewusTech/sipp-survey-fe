@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/table";
 import Pencil from "@/assets/icons/Pencil.tsx";
 import Trash from "@/assets/icons/Trash.tsx";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { toast } from "sonner";
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog.tsx";
 import Loader from "@/components/shared/Loader.tsx";
+import { Input } from "@/components/ui/input.tsx";
 
 interface Drainase {
   id: number;
@@ -37,6 +38,10 @@ interface Drainase {
   nama_desa: string;
   nama_kecamatan: string;
 }
+interface RoadSections {
+  id: number;
+  name: string;
+}
 
 const Drainase = () => {
   const [drainase, setDrainase] = useState<Drainase[]>([]);
@@ -44,14 +49,18 @@ const Drainase = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [sortField, setSortField] = useState<keyof Drainase>("nama_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
+  const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const listDrainase = "drainase";
+  const wilayah = "kecamatan";
 
   useEffect(() => {
     document.title = "Drainase - SIPPP";
@@ -61,7 +70,7 @@ const Drainase = () => {
     const page = pageString ? parseInt(pageString) : 1;
     setCurrentPage(page);
     fetchRoadSections(currentPage);
-  }, [searchParams]); //currentPage
+  }, [searchParams, searchTerm, selectedWilayah]); //currentPage
 
   const fetchRoadSections = (page: number) => {
     axios
@@ -72,6 +81,9 @@ const Drainase = () => {
         params: {
           page: page,
           perPage: perPage,
+          // year: year,
+          search: searchTerm,
+          kecamatan_id: selectedWilayah,
         },
       })
       .then((response) => {
@@ -87,30 +99,57 @@ const Drainase = () => {
       });
   };
 
+  useEffect(() => {
+    axios
+      .get(`${apiUrl}/${wilayah}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const data = response.data.data;
+        setRoadSections(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   const drainaseData: Drainase[] = drainase.map((item, index) => ({
     ...item,
     no: index + 1,
   }));
 
   const handleSort = (field: keyof Drainase) => {
-    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
     sortData(field, newSortOrder, drainase);
   };
 
-  const sortData = (field: keyof Drainase, order: "asc" | "desc", data: Drainase[]) => {
+  const sortData = (
+    field: keyof Drainase,
+    order: "asc" | "desc",
+    data: Drainase[],
+  ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
       const valueB = b[field];
 
       // Convert to number if the field is expected to be numeric but is in string format
-      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
-      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+      const numA =
+        typeof valueA === "string" && !isNaN(Number(valueA))
+          ? Number(valueA)
+          : valueA;
+      const numB =
+        typeof valueB === "string" && !isNaN(Number(valueB))
+          ? Number(valueB)
+          : valueB;
 
-      if (typeof numA === 'number' && typeof numB === 'number') {
+      if (typeof numA === "number" && typeof numB === "number") {
         return order === "asc" ? numA - numB : numB - numA;
-      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      } else if (typeof valueA === "string" && typeof valueB === "string") {
         return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
@@ -121,6 +160,8 @@ const Drainase = () => {
     });
     setDrainase(sortedData);
   };
+
+  console.log(searchTerm);
 
   const handlePreviousPage = () => {
     navigate(`?page=${currentPage - 1}`);
@@ -157,12 +198,41 @@ const Drainase = () => {
       <div className="p-4 sm:ml-64 flex flex-col gap-5">
         <div className="md:flex-row flex-col md:justify-between ">
           <h1 className="text-2xl text-gray-400">Drainase</h1>
-          <Link to="/drainase/create" className="text-white">
-            <div className="flex justify-center bg-biru hover:bg-biru-2 px-5 py-2 md:py-1 items-center gap-3 rounded-full mt-7">
-              Add New
-              <Plus className="text-white" />
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-5">
+            <div className="flex gap-5 md:flex-row flex-col">
+              <div className="bg-white flex items-center md:justify-between px-3 gap-2 rounded-full">
+                <Input
+                  type="text"
+                  className="border-none rounded-full w-32"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Search className="text-gray-400" />
+              </div>
+              <div className="flex md:items-center items-start gap-3 md:flex-row flex-col">
+                <h4 className="text-gray-400 ml-3 md:ml-0">Kecamatan: </h4>
+                <select
+                  className="w-full md:w-[140px] rounded-full p-2 bg-white"
+                  value={selectedWilayah}
+                  onChange={(e) => setSelectedWilayah(e.target.value)}
+                >
+                  <option disabled>Pilih Wilayah</option>
+                  {roadSections.map((roadSection) => (
+                    <option key={roadSection.id} value={roadSection.id}>
+                      {roadSection.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </Link>
+            <Link to="/drainase/create" className="text-white">
+              <div className="flex justify-center bg-biru hover:bg-biru-2 px-5 py-2 md:py-1 items-center gap-3 rounded-full mt-2">
+                Add New
+                <Plus className="text-white" />
+              </div>
+            </Link>
+          </div>
         </div>
         <Table className="bg-white rounded-2xl">
           <TableHeader>
@@ -171,16 +241,23 @@ const Drainase = () => {
                 No {sortField === "no" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("nama_ruas")}>
-                Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+                Nama Ruas{" "}
+                {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("nama_kecamatan")}>
-                Kecamatan {sortField === "nama_kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
+                Kecamatan{" "}
+                {sortField === "nama_kecamatan" &&
+                  (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("nama_desa")}>
-                Desa {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}
+                Desa{" "}
+                {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead onClick={() => handleSort("panjang_ruas")}>
-                Panjang {sortField === "panjang_ruas" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+                Panjang{" "}
+                {sortField === "panjang_ruas" &&
+                  (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -200,10 +277,14 @@ const Drainase = () => {
               </TableRow>
             ) : (
               drainaseData.map(
-                (
-                  { id, no, nama_ruas, panjang_ruas, nama_desa, nama_kecamatan },
-
-                ) => (
+                ({
+                  id,
+                  no,
+                  nama_ruas,
+                  panjang_ruas,
+                  nama_desa,
+                  nama_kecamatan,
+                }) => (
                   <TableRow key={id}>
                     <TableCell className="font-medium">{no}</TableCell>
                     <TableCell className="truncate">{nama_ruas}</TableCell>

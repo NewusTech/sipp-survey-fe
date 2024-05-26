@@ -46,6 +46,9 @@ const StatisticType = ({ year }: { year: string }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params: {
+            year: year,
+          },
         });
 
         const data = response.data.data;
@@ -57,11 +60,11 @@ const StatisticType = ({ year }: { year: string }) => {
           datasets: [
             {
               data: [
-                Number(data.hotmix_count),
-                Number(data.rigit_count),
-                Number(data.lapen_count),
-                Number(data.telford_count),
-                Number(data.tanah_count),
+                Number(data.hotmix_count) || 0,
+                Number(data.rigit_count) || 0,
+                Number(data.lapen_count) || 0,
+                Number(data.telford_count) || 0,
+                Number(data.tanah_count) || 0,
               ],
               backgroundColor: [
                 "#AEAEAE",
@@ -89,7 +92,7 @@ const StatisticType = ({ year }: { year: string }) => {
     };
 
     fetchData();
-  }, []);
+  }, [year]);
 
   const options = {
     plugins: {
@@ -99,13 +102,25 @@ const StatisticType = ({ year }: { year: string }) => {
     },
   };
 
+  // const isDataEmpty = (data: any) => {
+  //   return data.every((value: any) => value === 0);
+  // };
+
   return (
-    <div className="w-full">
+    <div className="w-full md:w-[80vh] xl:w-[49%]">
       <div className="bg-white rounded-xl p-5">
-        <h3 className="text-lg text-biru font-medium">Jenis Perkerasan</h3>
+        <h3 className="text-lg text-biru font-medium">
+          Jenis Perkerasan Jalan
+        </h3>
         <div className="flex flex-col items-center justify-center my-6 gap-5">
           <div className="w-48 h-48 mt-10">
-            {chartData && <Doughnut data={chartData} options={options} />}
+            {chartData === null ? (
+              <p className="text-center text-black w-full">
+                Tidak ada data pada tahun {year}
+              </p>
+            ) : (
+              <Doughnut data={chartData} options={options} />
+            )}
           </div>
           <div className="grid grid-cols-5 gap-2">
             <Dialog>
@@ -164,18 +179,32 @@ const StatisticType = ({ year }: { year: string }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="truncate">
-                {result.hotmix_count || 0} M
-              </TableCell>
-              <TableCell className="truncate">{result.rigit_count || 0} M</TableCell>
-              <TableCell className="truncate">{result.lapen_count || 0} M</TableCell>
-              <TableCell className="truncate">
-                {result.telford_count || 0} M
-              </TableCell>
-              <TableCell className="truncate">{result.tanah_count || 0} M</TableCell>
-              <TableCell className="truncate">{total} KM</TableCell>
-            </TableRow>
+            {result ? (
+              <TableRow>
+                <TableCell className="truncate">
+                  {result.hotmix_count || 0} M
+                </TableCell>
+                <TableCell className="truncate">
+                  {result.rigit_count || 0} M
+                </TableCell>
+                <TableCell className="truncate">
+                  {result.lapen_count || 0} M
+                </TableCell>
+                <TableCell className="truncate">
+                  {result.telford_count || 0} M
+                </TableCell>
+                <TableCell className="truncate">
+                  {result.tanah_count || 0} M
+                </TableCell>
+                <TableCell className="truncate">{total || 0} KM</TableCell>
+              </TableRow>
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-black">
+                  Tidak ada data pada tahun {year}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

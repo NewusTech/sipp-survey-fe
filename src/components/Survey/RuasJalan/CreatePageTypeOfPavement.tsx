@@ -24,6 +24,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { Search } from "lucide-react";
+import MapSearch from "@/components/shared/Maps.tsx";
+import { LatLngTuple } from "leaflet";
 
 const formSchema = z.object({
   rigit: z
@@ -88,9 +90,9 @@ const CreatePageTypeOfPavement = () => {
     RoadSectionDetails[]
   >([]);
   const [searchInput, setSearchInput] = useState(""); // State for search input
-
+  const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const filteredOptions = roadSections.filter((roadSection) =>
-    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase())
+    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase()),
   );
 
   const navigate = useNavigate();
@@ -103,6 +105,10 @@ const CreatePageTypeOfPavement = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  const handleLatLongChange = (lat: number, long: number) => {
+    setLatLong([lat, long]);
+  };
 
   useEffect(() => {
     axios
@@ -131,6 +137,11 @@ const CreatePageTypeOfPavement = () => {
         .then((response) => {
           const data = response.data.data;
           setRoadSectionDetail(data);
+          console.log(data[0].latitude);
+          setLatLong([
+            parseFloat(data[0].latitude),
+            parseFloat(data[0].longitude),
+          ]);
         })
         .catch((error) => {
           console.log(error);
@@ -173,7 +184,7 @@ const CreatePageTypeOfPavement = () => {
   }
 
   return (
-    <section className="bg-abu-2 w-screen h-screen md:h-[1300px] py-10 overflow-scroll md:overflow-hidden">
+    <section className="bg-abu-2 w-screen h-screen md:h-[1500px] py-10 overflow-scroll md:overflow-hidden">
       <div className="sm:ml-64 flex flex-col gap-5">
         <div className="container mx-auto">
           <h1 className="text-xl text-gray-400 font-medium">
@@ -439,6 +450,12 @@ const CreatePageTypeOfPavement = () => {
                       />
                     </div>
                   </div>
+                  <MapSearch
+                    defaultLat={latLong ? latLong?.[0] : undefined}
+                    defaultLng={latLong ? latLong?.[1] : undefined}
+                    onLatLongChange={handleLatLongChange}
+                    type="survey"
+                  />
                   <div className="flex gap-3 justify-end">
                     <Button
                       type="submit"
