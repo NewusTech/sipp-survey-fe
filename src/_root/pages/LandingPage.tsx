@@ -66,7 +66,7 @@ const LandingPage = () => {
         </div>
         <div className="mt-80 flex justify-center items-center gap-20 md:gap-5 md:-mt-[90px] z-30">
           <a
-            href="https://anggaran.sippp-tubabakab.com/"
+            href="https://anggaran.sippp-puprtubabakab.com/"
             target="_blank"
             className="w-16 h-16 md:h-[138px] md:w-[138px] rounded-full bg-[#FEC830] transition-colors duration-300 hover:bg-[#FFBE05] flex flex-col items-center justify-center gap-2 shadow-custom"
           >
