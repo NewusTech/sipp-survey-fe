@@ -51,7 +51,6 @@ const MapWithMarkers = ({ year }: { year: string }) => {
         const newMarkerPositions = data
           .filter((item) => item.latitude !== null && item.longitude !== null)
           .map((item) => item);
-        console.log(newMarkerPositions);
         setMapPointData(newMarkerPositions);
       })
       .catch((error) => {
@@ -66,8 +65,6 @@ const MapWithMarkers = ({ year }: { year: string }) => {
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
   });
-
-  console.log(mapPointData);
 
   return (
     <MapContainer

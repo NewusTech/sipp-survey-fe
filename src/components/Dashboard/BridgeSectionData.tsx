@@ -79,7 +79,6 @@ const BridgeSectionData = ({ year }: { year: string }) => {
       .then((response) => {
         const data = response.data.data.data;
         setBridges(data);
-        console.log(response);
         setTotalPages(Math.ceil(response.data.data.total / perPage));
       })
       .catch((error) => {
@@ -90,26 +89,36 @@ const BridgeSectionData = ({ year }: { year: string }) => {
       });
   };
 
-
   const handleSort = (field: keyof BridgeSection) => {
-    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
     sortData(field, newSortOrder, bridges);
   };
 
-  const sortData = (field: keyof BridgeSection, order: "asc" | "desc", data: BridgeSection[]) => {
+  const sortData = (
+    field: keyof BridgeSection,
+    order: "asc" | "desc",
+    data: BridgeSection[],
+  ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
       const valueB = b[field];
 
       // Convert to number if the field is expected to be numeric but is in string format
-      const numA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
-      const numB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+      const numA =
+        typeof valueA === "string" && !isNaN(Number(valueA))
+          ? Number(valueA)
+          : valueA;
+      const numB =
+        typeof valueB === "string" && !isNaN(Number(valueB))
+          ? Number(valueB)
+          : valueB;
 
-      if (typeof numA === 'number' && typeof numB === 'number') {
+      if (typeof numA === "number" && typeof numB === "number") {
         return order === "asc" ? numA - numB : numB - numA;
-      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      } else if (typeof valueA === "string" && typeof valueB === "string") {
         return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
@@ -142,31 +151,69 @@ const BridgeSectionData = ({ year }: { year: string }) => {
       <Table className="bg-white rounded-2xl mt-5">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px] truncate" onClick={() => handleSort("no_ruas")}>
+            <TableHead
+              className="w-[100px] truncate"
+              onClick={() => handleSort("no_ruas")}
+            >
               No {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nama_ruas")}>
-              Nama Ruas {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nama_ruas")}
+            >
+              Nama Ruas{" "}
+              {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("no_jembatan")}>
-              No Jembatan {sortField === "no_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("no_jembatan")}
+            >
+              No Jembatan{" "}
+              {sortField === "no_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
             <TableHead onClick={() => handleSort("asal")}>
               Asal {sortField === "asal" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nama_jembatan")}>
-              Nama Jembatan {sortField === "nama_jembatan" && (sortOrder === "asc" ? "↑" : "↓")}
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nama_jembatan")}
+            >
+              Nama Jembatan{" "}
+              {sortField === "nama_jembatan" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("kmpost")}>
-              KMPOST (km) {sortField === "kmpost" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("panjang")}>
-              Panjang {sortField === "panjang" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("kmpost")}
+            >
+              KMPOST (km){" "}
+              {sortField === "kmpost" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("panjang")}
+            >
+              Panjang{" "}
+              {sortField === "panjang" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
             <TableHead className="truncate" onClick={() => handleSort("lebar")}>
-              Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("nilai_kondisi")}>
-              Nilai Kondisi {sortField === "nilai_kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
-            <TableHead className="truncate" onClick={() => handleSort("kondisi")}>
-              Kondisi {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}</TableHead>
+              Lebar {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("nilai_kondisi")}
+            >
+              Nilai Kondisi{" "}
+              {sortField === "nilai_kondisi" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
+            <TableHead
+              className="truncate"
+              onClick={() => handleSort("kondisi")}
+            >
+              Kondisi{" "}
+              {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

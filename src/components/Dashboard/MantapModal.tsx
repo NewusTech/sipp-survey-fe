@@ -46,7 +46,6 @@ const MantapModal = ({ year }: { year: string }) => {
       .then((response) => {
         setBridgeSectionData(response.data.data);
         setIsLoading(false);
-        console.log(response.data.data);
       })
       .catch((error) => {
         console.log(error);

@@ -47,8 +47,6 @@ const MapWithMarkers = ({ year }: { year: string }) => {
       });
   }, [year]);
 
-  console.log(mapPointDataBridge);
-
   // Konfigurasi ikon marker kustom
 
   const iconMapping = {
