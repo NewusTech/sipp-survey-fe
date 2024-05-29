@@ -67,13 +67,13 @@ interface DrainaseDetails {
 const CreatePageSurveyDrainase = () => {
   const [drainases, setDrainases] = useState<Drainase[]>([]);
   const [drainaseDetail, setDrainaseDetail] = useState<DrainaseDetails | null>(
-    null,
+    null
   );
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
   const filteredOptions = drainases.filter((drainase) =>
-    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase()),
+    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase())
   );
 
   const handleLatLongChange = (lat: number, long: number) => {
@@ -95,6 +95,9 @@ const CreatePageSurveyDrainase = () => {
       .get(`${apiUrl}/${drainase}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          paginate_count: 150000,
         },
       })
       .then((response) => {
@@ -188,8 +191,8 @@ const CreatePageSurveyDrainase = () => {
                                 <SelectValue placeholder="Ruas Drainase" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
-                              <div className="px-2 flex items-center justify-between">
+                            <SelectContent className="pt-10">
+                              <div className="px-2 fixed top-0 flex items-center justify-between z-10">
                                 <Search className="text-slate-400" />
                                 <Input
                                   className="border-b"
@@ -205,7 +208,7 @@ const CreatePageSurveyDrainase = () => {
                                   key={drainase.id}
                                   value={drainase.id.toString()}
                                 >
-                                  <div className="py-1 border-b">
+                                  <div className="py-1 border-b w-full">
                                     <h2 className="font-semibold">
                                       {drainase.nama_ruas}
                                     </h2>
