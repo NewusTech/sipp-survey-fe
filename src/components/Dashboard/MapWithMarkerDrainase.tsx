@@ -6,8 +6,8 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 interface LatLong {
-  latitude: string | null;
-  longitude: string | null;
+  latitude: any;
+  longitude: any;
   type: string;
   nama_ruas?: string;
   nama_desa?: string;

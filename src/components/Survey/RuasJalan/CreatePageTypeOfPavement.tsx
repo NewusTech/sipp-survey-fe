@@ -92,7 +92,7 @@ const CreatePageTypeOfPavement = () => {
   const [searchInput, setSearchInput] = useState(""); // State for search input
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const filteredOptions = roadSections.filter((roadSection) =>
-    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase()),
+    roadSection.nama.toLowerCase().includes(searchInput.toLowerCase())
   );
 
   const navigate = useNavigate();
@@ -220,7 +220,7 @@ const CreatePageTypeOfPavement = () => {
                                 />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="pt-12">
                               <div className="top-0 fixed px-2 flex items-center bg-white justify-between z-10 w-full py-2">
                                 <Search className="text-slate-400" />
                                 <Input

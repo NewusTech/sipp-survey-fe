@@ -86,6 +86,7 @@ const CreatePageTypeOfPavement = () => {
       .then((response) => {
         const data = response.data.data;
         setDrainaseById(data);
+        setLatLong([parseFloat(data.latitude), parseFloat(data.longitude)]);
         console.log(data);
       })
       .catch((error) => {
@@ -338,7 +339,7 @@ const CreatePageTypeOfPavement = () => {
                       className="rounded-full bg-pink w-full hover:bg-pink-2 text-xl font-light px-10"
                       onClick={() =>
                         navigate(
-                          `/survey-drainase/detail/${idParam}?page=${currentPage}`,
+                          `/survey-drainase/detail/${idParam}?page=${currentPage}`
                         )
                       }
                     >
