@@ -29,6 +29,13 @@ import {
 } from "@/components/ui/alert-dialog.tsx";
 import Loader from "@/components/shared/Loader.tsx";
 import { Input } from "@/components/ui/input.tsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select.tsx";
 
 interface Drainase {
   id: number;
@@ -43,6 +50,11 @@ interface RoadSections {
   name: string;
 }
 
+interface Villages {
+  id: number;
+  nama: string;
+}
+
 const Drainase = () => {
   const [drainase, setDrainase] = useState<Drainase[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,13 +66,21 @@ const Drainase = () => {
   const [sortField, setSortField] = useState<keyof Drainase>("nama_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
+  const [selectedDesa, setSelectedDesa] = useState(""); // State untuk menyimpan nilai yang dipilih
   const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
+  const [roadDesa, setRoadDesa] = useState<Villages[]>([]);
+  const [searchInput, setSearchInput] = useState(""); // State for search input
+
+  const filteredOptions = roadDesa.filter((drainase) =>
+    drainase.nama.toLowerCase().includes(searchInput.toLowerCase()),
+  );
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const listDrainase = "drainase";
   const wilayah = "kecamatan";
+  const desa = "master_desa";
 
   useEffect(() => {
     document.title = "Drainase - SIPPP";
@@ -70,7 +90,7 @@ const Drainase = () => {
     const page = pageString ? parseInt(pageString) : 1;
     setCurrentPage(page);
     fetchRoadSections(currentPage);
-  }, [searchParams, searchTerm, selectedWilayah]); //currentPage
+  }, [searchParams, searchTerm, selectedWilayah, selectedDesa]); //currentPage
 
   const fetchRoadSections = (page: number) => {
     axios
@@ -84,6 +104,7 @@ const Drainase = () => {
           // year: year,
           search: searchTerm,
           kecamatan_id: selectedWilayah,
+          desa_id: selectedDesa,
         },
       })
       .then((response) => {
@@ -109,6 +130,20 @@ const Drainase = () => {
       .then((response) => {
         const data = response.data.data;
         setRoadSections(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    axios
+      .get(`${apiUrl}/${desa}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const data = response.data.data;
+        setRoadDesa(data);
       })
       .catch((error) => {
         console.log(error);
@@ -160,8 +195,6 @@ const Drainase = () => {
     });
     setDrainase(sortedData);
   };
-
-  console.log(searchTerm);
 
   const handlePreviousPage = () => {
     navigate(`?page=${currentPage - 1}`);
@@ -224,6 +257,53 @@ const Drainase = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="flex md:items-center items-start gap-3 md:flex-row flex-col">
+                <h4 className="text-gray-400 ml-3 md:ml-0">Desa: </h4>
+                {/*<select*/}
+                {/*  className="w-full md:w-[140px] rounded-full p-2 bg-white"*/}
+                {/*  value={selectedDesa}*/}
+                {/*  onChange={(e) => setSelectedDesa(e.target.value)}*/}
+                {/*>*/}
+                {/*  <option disabled>Pilih Desa</option>*/}
+
+                {/*  {filteredOptions.map((roadSection) => (*/}
+                {/*    <option key={roadSection.id} value={roadSection.id}>*/}
+                {/*      {roadSection.nama}*/}
+                {/*    </option>*/}
+                {/*  ))}*/}
+                {/*</select>*/}
+                <Select
+                  value={selectedDesa}
+                  onValueChange={(e: string) => setSelectedDesa(e)}
+                >
+                  <SelectTrigger
+                    name="ruas_drainase"
+                    className="md:w-[180px] w-[150px] rounded-full "
+                  >
+                    <SelectValue placeholder="Ruas Drainase" />
+                  </SelectTrigger>
+                  <SelectContent className="pt-10">
+                    <div className="px-2 fixed border-b top-0 flex items-center justify-between z-10">
+                      <Search className="text-slate-400" />
+                      <Input
+                        placeholder="Search..."
+                        value={searchInput}
+                        onChange={(event) => setSearchInput(event.target.value)}
+                      />
+                    </div>
+                    {filteredOptions.map((drainase) => (
+                      <SelectItem
+                        key={drainase.id}
+                        value={drainase.id.toString()}
+                      >
+                        <div className="py-1 w-full">
+                          <h2>{drainase.nama}</h2>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <Link to="/drainase/create" className="text-white">
