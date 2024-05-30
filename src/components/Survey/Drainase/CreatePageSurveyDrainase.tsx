@@ -67,13 +67,15 @@ interface DrainaseDetails {
 const CreatePageSurveyDrainase = () => {
   const [drainases, setDrainases] = useState<Drainase[]>([]);
   const [drainaseDetail, setDrainaseDetail] = useState<DrainaseDetails | null>(
-    null
+    null,
   );
   const [latLong, setLatLong] = useState<LatLngTuple | null>(null);
   const [searchInput, setSearchInput] = useState(""); // State for search input
 
-  const filteredOptions = drainases.filter((drainase) =>
-    drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase())
+  const filteredOptions = drainases.filter(
+    (drainase) =>
+      drainase.nama_ruas.toLowerCase().includes(searchInput.toLowerCase()) ||
+      drainase.nama_desa.toLowerCase().includes(searchInput.toLowerCase()),
   );
 
   const handleLatLongChange = (lat: number, long: number) => {
