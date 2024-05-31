@@ -281,7 +281,7 @@ const Drainase = () => {
                     name="ruas_drainase"
                     className="md:w-[180px] w-[150px] rounded-full "
                   >
-                    <SelectValue placeholder="Ruas Drainase" />
+                    <SelectValue placeholder="Desa" />
                   </SelectTrigger>
                   <SelectContent className="pt-10">
                     <div className="px-2 fixed border-b top-0 flex items-center justify-between z-10">
