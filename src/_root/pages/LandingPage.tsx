@@ -25,13 +25,13 @@ const LandingPage = () => {
               </p>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-center">
+          <div className="flex flex-col md:flex-row items-center justify-center xss:space-y-4">
             <img
               src="/assets/images/logo.jpg"
               alt="tubaba"
-              className="w-12 h-12 md:h-[50px] md:w-[50px] -mt-5 md:-mt-2"
+              className="w-12 h-12 md:h-[50px] md:w-[50px] -mt-6 xs:-mt-2 2xs:-mt-2 md:-mt-2"
             />
-            <div className="ml-0 md:ml-9 md:text-left text-center xss:mt-2 xs:mt-6 md:-mt-2">
+            <div className="ml-0 md:ml-9 md:text-left text-center xss:mt-2 xs:mt-6 5xs:mt-3 md:-mt-2">
               <p className="text-xs lg:text-lg tracking-widest text-biru">
                 Dinas Pekerjaan Umum <br className="hidden md:inline" /> dan
                 Penataan Ruang
