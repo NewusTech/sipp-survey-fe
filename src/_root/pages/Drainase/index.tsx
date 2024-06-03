@@ -279,7 +279,7 @@ const Drainase = () => {
                 >
                   <SelectTrigger
                     name="ruas_drainase"
-                    className="md:w-[180px] w-[150px] rounded-full "
+                    className="md:w-[180px] w-full rounded-full "
                   >
                     <SelectValue placeholder="Desa" />
                   </SelectTrigger>
@@ -317,23 +317,38 @@ const Drainase = () => {
         <Table className="bg-white rounded-2xl">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]" onClick={() => handleSort("no")}>
+              <TableHead
+                className="truncate w-[100px]"
+                onClick={() => handleSort("no")}
+              >
                 No {sortField === "no" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("nama_ruas")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nama_ruas")}
+              >
                 Nama Ruas{" "}
                 {sortField === "nama_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("nama_kecamatan")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nama_kecamatan")}
+              >
                 Kecamatan{" "}
                 {sortField === "nama_kecamatan" &&
                   (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("nama_desa")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nama_desa")}
+              >
                 Desa{" "}
                 {sortField === "nama_desa" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("panjang_ruas")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("panjang_ruas")}
+              >
                 Panjang{" "}
                 {sortField === "panjang_ruas" &&
                   (sortOrder === "asc" ? "↑" : "↓")}
