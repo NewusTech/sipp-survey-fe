@@ -168,11 +168,11 @@ const RoadSection = () => {
       <div className="p-4 sm:ml-64 flex flex-col gap-5">
         <div className="md:flex-row flex-col md:justify-between ">
           <h1 className="text-2xl text-gray-400">Ruas Jalan</h1>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-5">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-4 md:mt-0 md:gap-5">
             <div className="bg-white flex items-center justify-between px-3 gap-2 rounded-full">
               <Input
                 type="text"
-                className="border-none rounded-full w-32"
+                className="border-none rounded-full w-full md:w-32"
                 placeholder="Search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -191,25 +191,37 @@ const RoadSection = () => {
           <TableHeader>
             <TableRow>
               <TableHead
-                className="w-[100px]"
+                className="truncate w-[100px]"
                 onClick={() => handleSort("no_ruas")}
               >
                 No{" "}
                 {sortField === "no_ruas" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("nama")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("nama")}
+              >
                 Nama {sortField === "nama" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("kecamatan")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("kecamatan")}
+              >
                 Kecamatan{" "}
                 {sortField === "kecamatan" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("panjang_ruas")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("panjang_ruas")}
+              >
                 Panjang{" "}
                 {sortField === "panjang_ruas" &&
                   (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead onClick={() => handleSort("lebar")}>
+              <TableHead
+                className="truncate"
+                onClick={() => handleSort("lebar")}
+              >
                 Lebar{" "}
                 {sortField === "lebar" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
