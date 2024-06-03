@@ -10,8 +10,10 @@ export default {
   prefix: "",
   theme: {
     screens: {
+      "5xs": "360px",
       xss: "375px",
       xxs: "390px",
+      "2xs": "412px",
       xs: "428px",
       sm: "640px",
       // => @media (min-width: 640px) { ... }
