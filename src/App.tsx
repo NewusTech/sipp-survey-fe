@@ -29,6 +29,10 @@ import UpdatePageSurveyDrainase from "@/components/Survey/Drainase/UpdatePageSur
 import DrainaseSurvey from "@/_root/pages/DrainaseSurvey.tsx";
 import DrainaseDetail from "@/components/Survey/Drainase/DrainaseDetail.tsx";
 import ImagePageSurveyDrainase from "@/components/Survey/Drainase/ImagePageSurveyDrainase.tsx";
+import BridgeSurveyVerification from "./_root/pages/VerifBridgeSection";
+import DrainaseVerification from "./_root/pages/VerifDrainase";
+import RoadSectionVerification from "./_root/pages/VerifRoad";
+import DrainaseDetailVerif from "./components/Verifikasi/Drainase/DrainaseDetailVerif";
 
 function App() {
   const token = Cookies.get("adsxcl");
@@ -59,6 +63,48 @@ function App() {
               isLoggedIn ? <Corridor /> : <Navigate to="/sign-in" replace />
             }
           />
+          {/* verifikasi */}
+          <Route
+            path="/verification-bridge"
+            element={
+              isLoggedIn ? (
+                <BridgeSurveyVerification />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
+            }
+          />
+          <Route
+            path="/verification-drainase"
+            element={
+              isLoggedIn ? (
+                <DrainaseVerification />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
+            }
+          />
+          <Route
+            path="/verification-drainase/detail/:id"
+            element={
+              isLoggedIn ? (
+                <DrainaseDetailVerif />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
+            }
+          />
+          <Route
+            path="/verification-road"
+            element={
+              isLoggedIn ? (
+                <RoadSectionVerification />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
+            }
+          />
+          {/* verifikasi */}
           <Route
             path="/bridge-survey"
             element={
@@ -89,6 +135,7 @@ function App() {
               )
             }
           />
+          {/* survey */}
           <Route
             path="/drainase"
             element={
@@ -209,6 +256,7 @@ function App() {
               )
             }
           />
+          {/* survey */}
           <Route
             path="/periodic"
             element={

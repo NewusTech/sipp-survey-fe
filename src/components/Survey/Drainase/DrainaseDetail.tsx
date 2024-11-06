@@ -323,7 +323,8 @@ const DrainaseDetail = () => {
               Kondisi{" "}
               {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}
             </TableHead>
-            <TableHead></TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -359,6 +360,37 @@ const DrainaseDetail = () => {
                 <TableCell>{item.lebar_bawah}</TableCell>
                 <TableCell>{item.tinggi}</TableCell>
                 <TableCell>{item.kondisi}</TableCell>
+                <TableCell>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
+                        <p className="px-2 py-1 text-black rounded bg-green-200 inline-block">Diterima</p>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Detail Verifikasi
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          <div className="wrap flex gap-2 text-black">
+                            <div className="Status w-[100px] flex-shrink-0">Status</div>
+                            <div className="Status">:</div>
+                            <div className="text-green-700">Diterima</div>
+                          </div>
+                          <div className="wrap flex gap-2 text-black mt-2">
+                            <div className="Status w-[100px] flex-shrink-0">Keterangan</div>
+                            <div className="Status">:</div>
+                            <div className="">Data sudah sesuai</div>
+                          </div>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="w-[100px]">Keluar</AlertDialogCancel>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
                 <TableCell>
                   <div className="flex gap-2 items-center justify-center">
                     <Link
