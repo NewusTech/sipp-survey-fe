@@ -40,6 +40,12 @@ const Topbar = () => {
     ) {
       return "Master Data";
     } else if (
+      pathname.startsWith("/verification-bridge") ||
+      pathname.startsWith("/verification-drainase") ||
+      pathname.startsWith("/verification-road")
+    ) {
+      return "Verifikasi";
+    } else if (
       pathname.startsWith("/periodic") ||
       pathname.startsWith("/statistic") ||
       pathname.startsWith("/download")

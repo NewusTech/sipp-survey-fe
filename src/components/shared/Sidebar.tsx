@@ -3,17 +3,20 @@ import { useEffect, useState } from "react";
 import Dashboard from "@/assets/icons/Dashboard.tsx";
 import { Database, FileText } from "lucide-react";
 import Survey from "@/assets/icons/Survey.tsx";
+import { Verifikasi } from "@/assets/icons/Verifikasi";
 
 const Sidebar = () => {
   const { pathname } = useLocation();
   const [isMasterDataOpen, setIsMasterDataOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
+  const [isSurveyOpenVerifikasi, setIsSurveyOpenVerifikasi] = useState(false);
 
   useEffect(() => {
     setIsMasterDataOpen(false);
     setIsReportOpen(false);
     setIsSurveyOpen(false);
+    setIsSurveyOpenVerifikasi(false);
     if (
       pathname === "/drainase" ||
       pathname.startsWith("/road-section") ||
@@ -28,6 +31,15 @@ const Sidebar = () => {
     ) {
       setIsSurveyOpen(true);
     }
+    // verifikasi
+    if (
+      pathname.startsWith("/verification-bridge") ||
+      pathname.startsWith("/verification-road") ||
+      pathname.startsWith("/verification-drainase")
+    ) {
+      setIsSurveyOpenVerifikasi(true);
+    }
+    // verifikasi
     if (
       pathname === "/periodic" ||
       pathname === "/statistic" ||
@@ -51,6 +63,11 @@ const Sidebar = () => {
 
   const handleSurveyClick = () => {
     setIsSurveyOpen((prevState) => !prevState);
+    setIsMasterDataOpen(false);
+    setIsReportOpen(false);
+  };
+  const handleVerifikasiClick = () => {
+    setIsSurveyOpenVerifikasi((prevState) => !prevState);
     setIsMasterDataOpen(false);
     setIsReportOpen(false);
   };
@@ -132,6 +149,52 @@ const Sidebar = () => {
               </div>
             </div>
           )}
+          {/* verifikasi */}
+          <li
+            className={`font-normal group ${isSurveyOpenVerifikasi || pathname.startsWith("/verification-drainase") || pathname.startsWith("/verification-road") || pathname.startsWith("/verification-bridge") ? "bg-kuning" : ""} hover:bg-kuning py-3 px-4 rounded-xl transition-colors duration-300`}
+            onClick={handleVerifikasiClick}
+          >
+            <div className="flex gap-6 items-center cursor-pointer">
+              {isSurveyOpenVerifikasi ? (
+                <Verifikasi color="fill-biru" />
+              ) : (
+                <Verifikasi
+                  color={`${pathname.startsWith("/verification-drainase") || pathname.startsWith("/verification-road") || pathname.startsWith("/verification-bridge") ? "fill-biru" : "fill-white"} group-hover:fill-biru transition-colors duration-300`}
+                />
+              )}
+              <p
+                className={`${isSurveyOpenVerifikasi || pathname.startsWith("/verification-drainase") || pathname.startsWith("/verification-road") || pathname.startsWith("/verification-bridge") ? "text-biru" : "text-white"} group-hover:text-biru transition-colors duration-300`}
+              >
+                Verifikasi
+              </p>
+            </div>
+          </li>
+          {isSurveyOpenVerifikasi && (
+            <div className="flex flex-col gap-3">
+              <div
+                className={`ml-16 px-4 border-l-4 gap-2 hover:border-l-kuning hover:text-kuning ${pathname.startsWith("/verification-drainase") ? "border-l-kuning text-kuning" : "border-l-biru text-white"} mt-1`}
+              >
+                <Link to="/verification-drainase" className="text-sm">
+                  Verifikasi Drainase
+                </Link>
+              </div>
+              <div
+                className={`ml-16 px-4 border-l-4 gap-2 hover:border-l-kuning hover:text-kuning ${pathname.startsWith("/verification-road") ? "border-l-kuning text-kuning" : "border-l-biru text-white"} mt-1`}
+              >
+                <Link to="/verification-road" className="text-sm">
+                  Verifikasi Jalan
+                </Link>
+              </div>
+              <div
+                className={`ml-16 px-4 border-l-4 gap-2 hover:border-l-kuning hover:text-kuning ${pathname.startsWith("/verification-bridge") ? "border-l-kuning text-kuning" : "border-l-biru text-white"} mt-1`}
+              >
+                <Link to="/verification-bridge" className="text-sm">
+                  Verifikasi Jembatan
+                </Link>
+              </div>
+            </div>
+          )}
+          {/* verifikasi */}
           <li
             className={`font-normal group ${isReportOpen || pathname === "/periodic" || pathname === "/statistic" || pathname === "/download" ? "bg-kuning" : ""} hover:bg-kuning py-3 px-4 rounded-xl transition-colors duration-300`}
             onClick={handleReportClick}

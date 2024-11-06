@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input.tsx";
-import { FileText, Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Date from "@/assets/icons/Date.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -10,8 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.tsx";
-import Pencil from "@/assets/icons/Pencil.tsx";
-import Trash from "@/assets/icons/Trash.tsx";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -29,14 +27,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog.tsx";
 import { months } from "@/constants";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "@/components/shared/Loader.tsx";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
-import ImportRoadSection from "@/components/Survey/RuasJalan/ImportRoadSection.tsx";
 import Eye from "@/assets/icons/Eye.tsx";
 import RoadSectionDetail from "@/components/shared/RoadSectionDetail.tsx";
+import { Textarea } from "@/components/ui/textarea";
+import Reject from "@/assets/icons/Reject";
+import Verif from "@/assets/icons/Verif";
 
-interface TypeOfPavement {
+interface TypeOfPavementVerifikasi {
   hotmix: number;
   id_koridor: number;
   lapen: number;
@@ -62,17 +62,18 @@ interface RoadSections {
   name: string;
 }
 
-const TypeOfPavement = () => {
-  const [typeOfPavement, setTypeOfPavement] = useState<TypeOfPavement[]>([]);
+const TypeOfPavementVerifikasi = () => {
+  const [typeOfPavementVerifikasi, setTypeOfPavementVerifikasi] = useState<TypeOfPavementVerifikasi[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterByMonth, setFilterByMonth] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState<keyof TypeOfPavement>("no_ruas");
+  const [sortField, setSortField] = useState<keyof TypeOfPavementVerifikasi>("no_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [roadSections, setRoadSections] = useState<RoadSections[]>([]);
   const [selectedWilayah, setSelectedWilayah] = useState(""); // State untuk menyimpan nilai yang dipilih
+  const [alasan, setAlasan] = useState('');
 
   const [selectedId, setSelectedId] = useState<number>(0);
   const [searchParams] = useSearchParams();
@@ -81,7 +82,7 @@ const TypeOfPavement = () => {
   const perPage = 10;
   const token = Cookies.get("adsxcl");
   const apiUrl = import.meta.env.VITE_APP_API_URL;
-  const listTypeOfPavement = "survey/jenis_perkerasan";
+  const listTypeOfPavementVerifikasi = "survey/jenis_perkerasan";
   const wilayah = "kecamatan";
 
   useEffect(() => {
@@ -90,7 +91,7 @@ const TypeOfPavement = () => {
     const page = pageString ? parseInt(pageString) : 1;
     setCurrentPage(page);
     axios
-      .get(`${apiUrl}/${listTypeOfPavement}`, {
+      .get(`${apiUrl}/${listTypeOfPavementVerifikasi}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +105,7 @@ const TypeOfPavement = () => {
       })
       .then((response) => {
         const data = response.data.data.data;
-        setTypeOfPavement(data);
+        setTypeOfPavementVerifikasi(data);
         setTotalPages(Math.ceil(response.data.data.total / perPage));
       })
       .catch((error) => {
@@ -131,18 +132,18 @@ const TypeOfPavement = () => {
       });
   }, []);
 
-  const handleSort = (field: keyof TypeOfPavement) => {
+  const handleSort = (field: keyof TypeOfPavementVerifikasi) => {
     const newSortOrder =
       sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
-    sortData(field, newSortOrder, typeOfPavement);
+    sortData(field, newSortOrder, typeOfPavementVerifikasi);
   };
 
   const sortData = (
-    field: keyof TypeOfPavement,
+    field: keyof TypeOfPavementVerifikasi,
     order: "asc" | "desc",
-    data: TypeOfPavement[],
+    data: TypeOfPavementVerifikasi[],
   ) => {
     const sortedData = [...data].sort((a, b) => {
       const valueA = a[field];
@@ -169,7 +170,7 @@ const TypeOfPavement = () => {
         return 0;
       }
     });
-    setTypeOfPavement(sortedData);
+    setTypeOfPavementVerifikasi(sortedData);
   };
 
   const handlePreviousPage = () => {
@@ -186,13 +187,13 @@ const TypeOfPavement = () => {
 
   const onDelete = (id: number) => {
     axios
-      .delete(`${apiUrl}/${listTypeOfPavement}/${id}`, {
+      .delete(`${apiUrl}/${listTypeOfPavementVerifikasi}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then(() => {
-        setTypeOfPavement((prevRoadSections) =>
+        setTypeOfPavementVerifikasi((prevRoadSections) =>
           prevRoadSections.filter((section) => section.id !== id),
         );
         toast("Berhasil delete data");
@@ -251,25 +252,6 @@ const TypeOfPavement = () => {
             </select>
           </div>
         </div>
-
-        <div className="flex md:flex-row flex-col gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="cursor-pointer flex bg-biru hover:bg-biru-2 justify-center px-5 py-2 md:py-1 my-3 md:my-0 items-center gap-3 rounded-full">
-                <div className="text-white">Import</div>
-                <FileText className="text-white w-5" />
-              </div>
-            </DialogTrigger>
-            <ImportRoadSection />
-          </Dialog>
-          <Link
-            to="/road-survey/create"
-            className="flex bg-biru hover:bg-biru-2 justify-center px-5 py-2 md:py-1 md:my-0 items-center gap-3 rounded-full"
-          >
-            <p className="text-white">Add New</p>
-            <Plus className="text-white w-5" />
-          </Link>
-        </div>
       </section>
       <Table className="bg-white rounded-2xl">
         <TableHeader>
@@ -316,7 +298,7 @@ const TypeOfPavement = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isLoading || !typeOfPavement ? (
+          {isLoading || !typeOfPavementVerifikasi ? (
             <TableRow>
               <TableCell colSpan={14}>
                 <div className="flex justify-center items-center p-4 w-full h-full">
@@ -324,14 +306,14 @@ const TypeOfPavement = () => {
                 </div>
               </TableCell>
             </TableRow>
-          ) : typeOfPavement.length === 0 ? (
+          ) : typeOfPavementVerifikasi.length === 0 ? (
             <TableRow>
               <TableCell colSpan={14} className="text-center text-slate-400">
                 Data tidak tersedia
               </TableCell>
             </TableRow>
           ) : (
-            typeOfPavement.map(
+            typeOfPavementVerifikasi.map(
               ({
                 nama_ruas,
                 panjang_ruas,
@@ -404,36 +386,72 @@ const TypeOfPavement = () => {
                         </DialogTrigger>
                         <RoadSectionDetail id={selectedId} />
                       </Dialog>
-                      <Link
-                        to={`/road-survey/edit/${id}?page=${currentPage}`}
-                        className="cursor-pointer rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center"
-                      >
-                        <div>
-                          <Pencil />
-                        </div>
-                      </Link>
+                      {/* verif */}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
                             <div>
-                              <Trash />
+                              <Verif />
                             </div>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Apakah kamu yakin ingin menghapus data ini?
+                              Apakah kamu yakin ingin menerima data ini?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Ini akan menghapus data yang sudah ada
+                              Dengan menerima, data yang ada akan diperbarui.
+                              <Textarea
+                                className='placeholder:text-[#3D3D3DB2]/70 placeholder:text-sm h-[150px] mt-2 p-3 text-xs md:text-base'
+                                placeholder="Silahkan masukan keterangan"
+                                value={alasan}
+                                onChange={(e) => setAlasan(e.target.value)}
+                              />
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Tidak</AlertDialogCancel>
+                            <AlertDialogCancel className="w-[100px]">Tidak</AlertDialogCancel>
                             <AlertDialogAction
-                              className="bg-biru hover:bg-biru-2"
+                              className="bg-biru hover:bg-biru-2 w-[100px]"
                               onClick={() => onDelete(id)}
+                              disabled={!alasan} // Disable button if loading or no reason provided
+                            >
+                              Ya
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      {/* reject */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
+                            <div>
+                              <Reject />
+                            </div>
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Apakah kamu yakin ingin menolak data ini?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Dengan menolak, data yang ada akan diperbarui.
+                              <Textarea
+                                className='placeholder:text-[#3D3D3DB2]/70 placeholder:text-sm h-[150px] mt-2 p-3 text-xs md:text-base'
+                                placeholder="Silahkan masukan keterangan"
+                                value={alasan}
+                                onChange={(e) => setAlasan(e.target.value)}
+                              />
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="w-[100px]">Tidak</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-biru hover:bg-biru-2 w-[100px]"
+                              onClick={() => onDelete(id)}
+                              disabled={!alasan} // Disable button if loading or no reason provided
                             >
                               Ya
                             </AlertDialogAction>
@@ -459,4 +477,4 @@ const TypeOfPavement = () => {
   );
 };
 
-export default TypeOfPavement;
+export default TypeOfPavementVerifikasi;

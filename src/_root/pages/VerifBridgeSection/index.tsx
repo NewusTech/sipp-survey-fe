@@ -6,16 +6,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Pencil from "@/assets/icons/Pencil.tsx";
-import Trash from "@/assets/icons/Trash.tsx";
-import { FileText, Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Paginations from "@/components/shared/Paginations.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { toast } from "sonner";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,12 +27,14 @@ import {
 } from "@/components/ui/alert-dialog.tsx";
 import Loader from "@/components/shared/Loader.tsx";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
-import ImportBridgeSection from "@/components/BridgeSection/ImportBridgeSection.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import Date from "@/assets/icons/Date.tsx";
 import { months } from "@/constants";
 import Eye from "@/assets/icons/Eye.tsx";
 import BridgeSectionDetail from "@/components/shared/BridgeSectionDetail.tsx";
+import { Textarea } from "@/components/ui/textarea";
+import Verif from "@/assets/icons/Verif";
+import Reject from "@/assets/icons/Reject";
 
 interface BridgeSection {
   id: number;
@@ -64,7 +64,7 @@ interface RoadSections {
   name: string;
 }
 
-const BridgeSurvey = () => {
+const BridgeSurveyVerification = () => {
   const [bridges, setBridges] = useState<BridgeSection[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -78,6 +78,7 @@ const BridgeSurvey = () => {
   const navigate = useNavigate();
   const [sortField, setSortField] = useState<keyof BridgeSection>("no_ruas");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [alasan, setAlasan] = useState('');
 
   const perPage = 10;
   const token = Cookies.get("adsxcl");
@@ -86,7 +87,7 @@ const BridgeSurvey = () => {
   const wilayah = "kecamatan";
 
   useEffect(() => {
-    document.title = "Ruas Jembatan - SIPPP";
+    document.title = "Verifikasi - SIPPP";
 
     setIsLoading(true);
     const pageString = searchParams.get("page");
@@ -218,7 +219,7 @@ const BridgeSurvey = () => {
     <section className="bg-abu-2 w-screen md:h-[1000px] h-screen overflow-scroll md:overflow-hidden">
       <div className="sm:ml-64 py-4 flex flex-col gap-3 px-5">
         <div className="flex flex-col justify-between">
-          <h1 className="text-2xl text-gray-400 ">Survey Jembatan</h1>
+          <h1 className="text-2xl text-gray-400 ">Verifikasi Jembatan</h1>
           <div className="flex my-8 md:flex-row flex-col gap-7 justify-between items-center -mx-2 md:-mx-0">
             <div className="flex flex-col md:flex-row gap-5 w-full">
               <div className="bg-white flex items-center justify-between px-3 gap-2 rounded-full h-10">
@@ -261,24 +262,6 @@ const BridgeSurvey = () => {
                   ))}
                 </select>
               </div>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-4 w-full justify-end">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div className="cursor-pointer flex justify-center bg-biru hover:bg-biru-2 px-5 py-2 md:py-1 items-center gap-3 rounded-full h-10">
-                    <div className="text-white">Import</div>
-                    <FileText className="text-white w-5" />
-                  </div>
-                </DialogTrigger>
-                <ImportBridgeSection />
-              </Dialog>
-              <Link to="/bridge-survey/create" className="text-white">
-                <div className="flex justify-center bg-biru hover:bg-biru-2 px-5 py-2 md:py-1 items-center gap-3 rounded-full h-10">
-                  Add New
-                  <Plus className="text-white w-5" />
-                </div>
-              </Link>
             </div>
           </div>
         </div>
@@ -355,10 +338,12 @@ const BridgeSurvey = () => {
                 Kondisi{" "}
                 {sortField === "kondisi" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
-              <TableHead >
+              <TableHead
+              >
                 Status
               </TableHead>
-              <TableHead >
+              <TableHead
+              >
                 Aksi
               </TableHead>
             </TableRow>
@@ -462,35 +447,72 @@ const BridgeSurvey = () => {
                         </DialogTrigger>
                         <BridgeSectionDetail id={selectedId} />
                       </Dialog>
-                      <div className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
-                        <Link
-                          to={`/bridge-survey/edit/${id}?page=${currentPage}`}
-                        >
-                          <Pencil />
-                        </Link>
-                      </div>
+                      {/* verif */}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
                             <div>
-                              <Trash />
+                              <Verif />
                             </div>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Apakah kamu yakin ingin menghapus data ini?
+                              Apakah kamu yakin ingin menerima data ini?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Ini akan menghapus data yang sudah ada
+                              Dengan menerima, data yang ada akan diperbarui.
+                              <Textarea
+                                className='placeholder:text-[#3D3D3DB2]/70 placeholder:text-sm h-[150px] mt-2 p-3 text-xs md:text-base'
+                                placeholder="Silahkan masukan keterangan"
+                                value={alasan}
+                                onChange={(e) => setAlasan(e.target.value)}
+                              />
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Tidak</AlertDialogCancel>
+                            <AlertDialogCancel className="w-[100px]">Tidak</AlertDialogCancel>
                             <AlertDialogAction
-                              className="bg-biru hover:bg-biru-2"
+                              className="bg-biru hover:bg-biru-2 w-[100px]"
                               onClick={() => onDelete(id)}
+                              disabled={!alasan} // Disable button if loading or no reason provided
+                            >
+                              Ya
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      {/* reject */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="rounded-full bg-abu-2 hover:bg-gray-200 h-8 w-8 flex items-center justify-center">
+                            <div>
+                              <Reject />
+                            </div>
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Apakah kamu yakin ingin menolak data ini?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Dengan menolak, data yang ada akan diperbarui.
+                              <Textarea
+                                className='placeholder:text-[#3D3D3DB2]/70 placeholder:text-sm h-[150px] mt-2 p-3 text-xs md:text-base'
+                                placeholder="Silahkan masukan keterangan"
+                                value={alasan}
+                                onChange={(e) => setAlasan(e.target.value)}
+                              />
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="w-[100px]">Tidak</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-biru hover:bg-biru-2 w-[100px]"
+                              onClick={() => onDelete(id)}
+                              disabled={!alasan} // Disable button if loading or no reason provided
                             >
                               Ya
                             </AlertDialogAction>
@@ -516,4 +538,4 @@ const BridgeSurvey = () => {
   );
 };
 
-export default BridgeSurvey;
+export default BridgeSurveyVerification;
